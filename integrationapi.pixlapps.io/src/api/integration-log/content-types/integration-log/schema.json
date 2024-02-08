@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "integration_logs",
+  "info": {
+    "singularName": "integration-log",
+    "pluralName": "integration-logs",
+    "displayName": "Integration Log",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "details": {
+      "type": "json"
+    },
+    "start_date": {
+      "type": "datetime"
+    },
+    "end_date": {
+      "type": "datetime"
+    },
+    "integration_flow": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::integration-flow.integration-flow",
+      "inversedBy": "integration_logs"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "Completed",
+        "Failed"
+      ]
+    },
+    "dataSync": {
+      "type": "integer",
+      "default": 0,
+      "required": true
+    }
+  }
+}

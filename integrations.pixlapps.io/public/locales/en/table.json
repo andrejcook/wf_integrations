@@ -1,0 +1,16 @@
+{
+  "empty-table-data": "No data found",
+  "empty-table-sorry-text": "Sorry we couldn’t found any data",
+  "table-item-id": "ID",
+  "table-item-title": "Name",
+  "table-item-title-title": "Title",
+  "table-item-start-date": "Start date",
+  "table-item-end-date": "End date",
+  "table-item-description": "Description",
+  "table-item-status": "Status",
+  "table-item-actions": "Actions",
+  "table-item-total": "Total",
+  "table-item-note": "Note",
+  "table-item-created-at": "Created"
+
+}

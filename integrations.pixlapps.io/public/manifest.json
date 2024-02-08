@@ -1,0 +1,14 @@
+{
+  "name": "Pixl Apps",
+  "short_name": "Pixl Apps",
+  "theme_color": "#ffffff",
+  "background_color": "#004740",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+
+  ],
+  "splash_pages": null
+}

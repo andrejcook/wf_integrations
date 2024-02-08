@@ -1,0 +1,50 @@
+{
+  "kind": "collectionType",
+  "collectionName": "apps",
+  "info": {
+    "singularName": "app",
+    "pluralName": "apps",
+    "displayName": "Apps",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": false
+    },
+    "client_id": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "client_secret": {
+      "type": "string",
+      "unique": false,
+      "required": true
+    },
+    "scope": {
+      "type": "string",
+      "required": true
+    },
+    "details": {
+      "type": "text"
+    },
+    "app_credentials": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::app-credential.app-credential",
+      "mappedBy": "app"
+    },
+    "integration_flows": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::integration-flow.integration-flow",
+      "mappedBy": "app"
+    }
+  }
+}

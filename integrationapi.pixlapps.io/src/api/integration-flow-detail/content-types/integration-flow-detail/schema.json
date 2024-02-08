@@ -1,0 +1,46 @@
+{
+  "kind": "collectionType",
+  "collectionName": "integration_flow_details",
+  "info": {
+    "singularName": "integration-flow-detail",
+    "pluralName": "integration-flow-details",
+    "displayName": "integration flow detail",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "last_run_date": {
+      "type": "datetime",
+      "required": false
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "Running",
+        "Stopped",
+        "Sleeping",
+        "Terminated"
+      ],
+      "default": "Stopped",
+      "required": true
+    },
+    "last_transform_data": {
+      "type": "json"
+    },
+    "snapshot_value": {
+      "type": "string"
+    },
+    "integration_flow": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::integration-flow.integration-flow",
+      "inversedBy": "integration_flow_detail"
+    },
+    "next_run_date": {
+      "type": "datetime"
+    }
+  }
+}

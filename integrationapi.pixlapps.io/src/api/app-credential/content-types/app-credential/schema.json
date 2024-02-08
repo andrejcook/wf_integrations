@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "app_credentials",
+  "info": {
+    "singularName": "app-credential",
+    "pluralName": "app-credentials",
+    "displayName": "App-credentials",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "token": {
+      "type": "string",
+      "required": true
+    },
+    "app": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::app.app",
+      "inversedBy": "app_credentials"
+    },
+    "integration_flows": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::integration-flow.integration-flow",
+      "mappedBy": "app_credential"
+    }
+  }
+}

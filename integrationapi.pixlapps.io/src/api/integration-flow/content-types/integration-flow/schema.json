@@ -1,0 +1,66 @@
+{
+  "kind": "collectionType",
+  "collectionName": "integration_flows",
+  "info": {
+    "singularName": "integration-flow",
+    "pluralName": "integration-flows",
+    "displayName": "Integration-flows",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "steps": {
+      "type": "json",
+      "required": true
+    },
+    "cron": {
+      "type": "string",
+      "required": true
+    },
+    "integrationType": {
+      "type": "enumeration",
+      "enum": [
+        "tixer",
+        "restapi"
+      ]
+    },
+    "app_credential": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::app-credential.app-credential",
+      "inversedBy": "integration_flows"
+    },
+    "app": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::app.app",
+      "inversedBy": "integration_flows"
+    },
+    "integration_logs": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::integration-log.integration-log",
+      "mappedBy": "integration_flow"
+    },
+    "ref_key_field": {
+      "type": "string",
+      "required": true
+    },
+    "snapshot_field": {
+      "type": "string"
+    },
+    "integration_flow_detail": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::integration-flow-detail.integration-flow-detail",
+      "mappedBy": "integration_flow"
+    }
+  }
+}
