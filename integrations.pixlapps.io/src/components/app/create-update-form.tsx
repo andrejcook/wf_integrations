@@ -190,7 +190,7 @@ export default function CreateOrUpdateForm({ initialValues }: IProps) {
                 return option.label
                   .split(':')
                   .join(' ')
-                  .replace(/(?:^|\s)\S/g, function (a) {
+                  .replace(/(?:^|\s)\S/g, function (a : any) {
                     return a.toUpperCase();
                   });
               }}

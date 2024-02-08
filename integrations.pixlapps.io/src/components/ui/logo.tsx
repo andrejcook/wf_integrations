@@ -3,14 +3,12 @@ import cn from 'classnames';
 import { siteSettings } from '@/settings/site.settings';
 import { useSettings } from '@/contexts/settings.context';
 import { LogoSVG } from '@/components/icons/logo';
-import LogoText from '@/components/icons/logo-text';
 import { useAtom } from 'jotai';
 import { miniSidebarInitialValue } from '@/utils/constants';
 import { useWindowSize } from '@/utils/use-window-size';
 import { RESPONSIVE_WIDTH } from '@/utils/constants';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useSettingsQuery } from '@/data/settings';
 
 const Logo: React.FC<React.AnchorHTMLAttributes<{}>> = ({
   className,
