@@ -1,10 +1,7 @@
 import {
   AuthResponse,
   LoginInput,
-  RegisterInput,
   User,
-  UserPaginator,
-  UserQueryOptions,
 } from '@/types';
 import { API_ENDPOINTS } from './api-endpoints';
 import { HttpClient } from './http-client';
@@ -18,17 +15,6 @@ export const userClient = {
   },
   logout: () => {
     return HttpClient.post<any>(API_ENDPOINTS.LOGOUT, {});
-  },
-  register: (variables: RegisterInput) => {
-    return HttpClient.post<AuthResponse>(API_ENDPOINTS.REGISTER, variables);
-  },
-  fetchUsers: ({ name, ...params }: Partial<UserQueryOptions>) => {
-    return HttpClient.get<UserPaginator>(API_ENDPOINTS.USERS, {
-      searchJoin: 'and',
-      with: 'wallet',
-      ...params,
-      search: HttpClient.formatSearchParams({ name }),
-    });
   },
   fetchUser: ({ id }: { id: string }) => {
     return HttpClient.get<User>(`${API_ENDPOINTS.USERS}/${id}`);

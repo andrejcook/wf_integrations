@@ -151,8 +151,8 @@ const List = ({
           end_date: Date;
         },
       ) => {
-        const startDate = new Date(record.start_date);
-        const endDate = new Date(record.end_date);
+        const startDate: any = new Date(record.start_date);
+        const endDate: any = new Date(record.end_date);
         const durationInMilliseconds = endDate - startDate;
 
         return convertMsToTime(durationInMilliseconds);
@@ -197,9 +197,8 @@ const List = ({
         return (
           <>
             <ActionButtons
-              id={id}
-              enablePreviewMode={true}
-              detailsUrl="test"
+              props={id}
+              viewAction={true}
               callback={() => console.log('callback')}
             />
           </>
