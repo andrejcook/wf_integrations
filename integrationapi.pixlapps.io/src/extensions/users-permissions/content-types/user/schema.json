@@ -64,18 +64,6 @@
       "target": "plugin::users-permissions.role",
       "inversedBy": "users",
       "configurable": false
-    },
-    "collections": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::collection.collection",
-      "mappedBy": "user"
-    },
-    "user_requests": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::user-request.user-request",
-      "mappedBy": "user"
     }
   }
 }

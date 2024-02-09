@@ -659,16 +659,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.role'
     >;
-    collections: Attribute.Relation<
-      'plugin::users-permissions.user',
-      'oneToMany',
-      'api::collection.collection'
-    >;
-    user_requests: Attribute.Relation<
-      'plugin::users-permissions.user',
-      'oneToMany',
-      'api::user-request.user-request'
-    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -763,49 +753,6 @@ export interface ApiAppCredentialAppCredential extends Schema.CollectionType {
   };
 }
 
-export interface ApiCollectionCollection extends Schema.CollectionType {
-  collectionName: 'collections';
-  info: {
-    singularName: 'collection';
-    pluralName: 'collections';
-    displayName: 'Collection';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    displayName: Attribute.String & Attribute.Required;
-    singularName: Attribute.String & Attribute.Required;
-    slug: Attribute.String;
-    user: Attribute.Relation<
-      'api::collection.collection',
-      'manyToOne',
-      'plugin::users-permissions.user'
-    >;
-    fields: Attribute.Relation<
-      'api::collection.collection',
-      'oneToMany',
-      'api::field.field'
-    >;
-    webflow_collection_id: Attribute.String;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::collection.collection',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::collection.collection',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
 export interface ApiEmailTemplateEmailTemplate extends Schema.CollectionType {
   collectionName: 'email_templates';
   info: {
@@ -831,45 +778,6 @@ export interface ApiEmailTemplateEmailTemplate extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'api::email-template.email-template',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
-export interface ApiFieldField extends Schema.CollectionType {
-  collectionName: 'fields';
-  info: {
-    singularName: 'field';
-    pluralName: 'fields';
-    displayName: 'Field';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    isEditable: Attribute.Boolean;
-    isRequired: Attribute.Boolean;
-    type: Attribute.String;
-    slug: Attribute.String;
-    displayName: Attribute.String;
-    helpText: Attribute.String;
-    collection: Attribute.Relation<
-      'api::field.field',
-      'manyToOne',
-      'api::collection.collection'
-    >;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::field.field',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::field.field',
       'oneToOne',
       'admin::user'
     > &
@@ -1034,9 +942,7 @@ declare module '@strapi/types' {
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
       'api::app.app': ApiAppApp;
       'api::app-credential.app-credential': ApiAppCredentialAppCredential;
-      'api::collection.collection': ApiCollectionCollection;
       'api::email-template.email-template': ApiEmailTemplateEmailTemplate;
-      'api::field.field': ApiFieldField;
       'api::integration-flow.integration-flow': ApiIntegrationFlowIntegrationFlow;
       'api::integration-flow-detail.integration-flow-detail': ApiIntegrationFlowDetailIntegrationFlowDetail;
       'api::integration-log.integration-log': ApiIntegrationLogIntegrationLog;
