@@ -23,7 +23,7 @@ const UrlContentFetcher: React.FC<UrlContentFetcherProps> = ({
       try {
         const response = await axios({
           method: 'get',
-          url: `http://localhost:3001/api/getData/${encodeURIComponent(url)}`,
+          url: `https://integrationapi.pixlapps.io/api/getData/${encodeURIComponent(url)}`,
         });
 
         setContent(response.data);

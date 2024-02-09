@@ -78,7 +78,7 @@ const TixerComponent: React.FC<Props> = ({
       try {
         const response = await axios({
           method: 'get',
-          url: `http://localhost:3001/api/getData/${encodeURIComponent(
+          url: `https://integrationapi.pixlapps.io/api/getData/${encodeURIComponent(
             `${TIXER_DOMAIN}${GROUP_API}${auth_key}`,
           )}`,
         });

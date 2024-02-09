@@ -255,7 +255,7 @@ module.exports = factories.createCoreController(
       const code = paramsObject["code"];
       const state = paramsObject["state"];
 
-      ctx.redirect("http://localhost:3002/callback?code=" + code);
+      ctx.redirect("https://integrations.pixlapps.io/callback?code=" + code);
     },
 
     async getAuthUrl(ctx) {
