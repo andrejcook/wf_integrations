@@ -69,10 +69,10 @@ const List = () => {
       )}
       {isEmpty(data) ? (
         <NotFound
-          image="/no-shop-found.svg"
           text="text-no-data-found"
           className="mx-auto w-7/12"
         />
+
       ) : null}
     </>
   );
