@@ -21,6 +21,7 @@ import {
   removeIdFromObject,
   retryAsyncOperation,
 } from "../../../utils/webflow/lib";
+const { FRONT_END_URL } = process.env;
 
 const model = "app";
 module.exports = factories.createCoreController(
@@ -255,7 +256,7 @@ module.exports = factories.createCoreController(
       const code = paramsObject["code"];
       const state = paramsObject["state"];
 
-      ctx.redirect("https://integrations.pixlapps.io/callback?code=" + code);
+      ctx.redirect(`${FRONT_END_URL}/callback?code=` + code);
     },
 
     async getAuthUrl(ctx) {
@@ -352,8 +353,7 @@ module.exports = factories.createCoreController(
     },
 
     async getData(ctx) {
-      const { url } = ctx.params;
-
+      const { url } = ctx.request.body;
       const response = await axios({
         url: url,
       });

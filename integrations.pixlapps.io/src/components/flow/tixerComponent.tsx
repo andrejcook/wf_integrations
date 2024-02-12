@@ -10,6 +10,7 @@ import Label from '../ui/label';
 import SelectInput from '../ui/select-input';
 import SwitchInput from '../ui/switch-input';
 import UrlContentFetcher from './urlContentFetcher';
+import { HttpClient } from '@/data/client/http-client';
 
 interface Props {
   register: any;
@@ -18,7 +19,7 @@ interface Props {
   setValue: any;
   setApiResponse: any;
 }
-const TIXER_DOMAIN = 'https://www.tixr.com/v1/';
+const TIXR_DOMAIN = 'https://www.tixr.com/v1/';
 const GROUP_API = 'groups?cpk=';
 
 export enum SyncType {
@@ -26,7 +27,7 @@ export enum SyncType {
   Private = 'private',
 }
 
-const category = [
+const categoryData = [
   { value: '', label: 'all' },
   { value: 'BusinessEvent', label: 'BusinessEvent' },
   { value: 'ChildrensEvent', label: 'ChildrensEvent' },
@@ -73,22 +74,56 @@ const TixerComponent: React.FC<Props> = ({
     name: `${fieldPrefix}.apiURL`,
   });
 
+  const category = useWatch({
+    control,
+    name: `${fieldPrefix}.category`,
+  });
+
+  const startDate = useWatch({
+    control,
+    name: `${fieldPrefix}.startDate`,
+  });
+
+
+  const endDate = useWatch({
+    control,
+    name: `${fieldPrefix}.endDate`,
+  });
+
+  const date = useWatch({
+    control,
+    name: `${fieldPrefix}.date`,
+  });
+
+  const inv = useWatch({
+    control,
+    name: `${fieldPrefix}.inv`,
+  });
+
+  const tag = useWatch({
+    control,
+    name: `${fieldPrefix}.tag`,
+  });
+
+  console.log(tag)
+
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const response = await axios({
-          method: 'get',
-          url: `https://integrationapi.pixlapps.io/api/getData/${encodeURIComponent(
-            `${TIXER_DOMAIN}${GROUP_API}${auth_key}`,
-          )}`,
+
+
+
+        const data =  await HttpClient.post<any>("getData", {
+          url: `${TIXR_DOMAIN}${GROUP_API}${auth_key}`
         });
 
-        if (response.data && response.data.length > 0) {
+
+        if (data && data.length > 0) {
           setGroupFetchError('');
         } else {
           setGroupFetchError('No Group found');
         }
-        setGroups(response.data);
+        setGroups(data);
       } catch (error) {
         setGroups([]);
         setGroupFetchError('Error fetching content');
@@ -98,12 +133,45 @@ const TixerComponent: React.FC<Props> = ({
   }, [auth_key]);
 
   useEffect(() => {
+    console.log(category);
+
+
     // Define the debounce function
     const debounceSearch = setTimeout(() => {
       const setURL = () => {
+
+        let URL = `${TIXR_DOMAIN}groups/${group?.id}/events?cpk=${auth_key}`
+
+        if(category && category.value) {
+          URL=URL+`&category=${category.value}`;
+        }
+
+        if(startDate) {
+          URL=URL+`&startDate=${startDate}`;
+        }
+
+        if(endDate) {
+          URL=URL+`&endDate=${endDate}`;
+        }
+
+
+        if(date) {
+          URL=URL+`&date=${date}`;
+        }
+
+
+        if(inv) {
+          URL=URL+`&inv=${inv}`;
+        }
+
+
+        if(tag) {
+          URL=URL+`&tag=${tag}`;
+        }
+
         setValue(
           `${fieldPrefix}.apiURL`,
-          `${TIXER_DOMAIN}groups/${group?.id}/events?cpk=${auth_key}`,
+          URL,
         );
       };
       setValue(`${fieldPrefix}.apiURL`, null);
@@ -111,7 +179,7 @@ const TixerComponent: React.FC<Props> = ({
     }, 600); // Adjust the debounce delay (in milliseconds) as needed
 
     return () => clearTimeout(debounceSearch);
-  }, [group?.id]);
+  }, [group?.id, category, tag, startDate,endDate,date,inv]);
 
   return (
     <div className="flex flex-wrap pb-8 my-5 border-b border-dashed border-border-base sm:my-8">
@@ -121,12 +189,6 @@ const TixerComponent: React.FC<Props> = ({
         className="w-full px-0 pb-5 sm:w-4/12 sm:py-8 sm:pe-4 md:w-1/3 md:pe-5"
       />
       <Card className="w-full sm:w-8/12 md:w-2/3">
-        <div>
-          <div className="flex items-center space-s-4">
-            <SwitchInput name={`${fieldPrefix}.isStaging`} control={control} />
-            <Label className="!mb-0.5">Staging API</Label>
-          </div>
-        </div>
         <Input
           label={'Auth Key'}
           {...register(`${fieldPrefix}.auth_key`)}
@@ -161,7 +223,7 @@ const TixerComponent: React.FC<Props> = ({
                 name={`${fieldPrefix}.category`}
                 control={control}
                 isCloseMenuOnSelect={false}
-                options={category}
+                options={categoryData}
               />
 
               <ValidationError message={errorField?.category?.message} />
@@ -169,7 +231,7 @@ const TixerComponent: React.FC<Props> = ({
             <div className="mb-5">
               <div className="flex items-center space-s-4">
                 <SwitchInput
-                  name={`${fieldPrefix}.show_full_inventory`}
+                  name={`${fieldPrefix}.inv`}
                   control={control}
                 />
                 <Label className="!mb-0.5">Show Full Inventory (TBD)</Label>

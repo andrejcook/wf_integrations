@@ -95,6 +95,7 @@ const Avatar: React.FC<AvatarProps> = ({
           priority={true}
           sizes="(max-width: 768px) 100vw"
           onError={() => setError(() => true)}
+          unoptimized
         />
       </div>
     );

@@ -167,7 +167,7 @@ function CreateOrUpdateForm({ initialValues }: IProps) {
 
         {integrationType && (
           <>
-            {integrationType && integrationType.value === 'tixer' && (
+            {integrationType && integrationType.value === 'tixr' && (
               <TixerConfig
                 register={register}
                 control={control}

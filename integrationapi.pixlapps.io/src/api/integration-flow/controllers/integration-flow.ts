@@ -7,7 +7,7 @@ import cronParser from "cron-parser";
 import {
   compareTixerdata,
   deepCompareItem,
-} from "../../../utils/component/tixer";
+} from "../../../utils/component/tixr";
 import {
   getResponseData,
   getTransFormData,
@@ -347,8 +347,8 @@ module.exports = factories.createCoreController(
     },
 
     async getFlowSummery(ctx) {
-      const sql = `SELECT 
-      CASE 
+      const sql = `SELECT
+      CASE
           WHEN status = 'Stopped' THEN 'Stopped'
           WHEN status = 'Sleeping' THEN 'Sleeping'
       WHEN status = 'Terminated' THEN 'Terminated'

@@ -32,7 +32,7 @@ export const appValidationSchema = yup.object().shape({
   app_credential: yup.mixed().required('Credential is required'),
   steps: yup.object().when('integrationType', (values, schema) => {
     const integrationType = values[0];
-    if (integrationType && integrationType.value === 'tixer') {
+    if (integrationType && integrationType.value === 'tixr') {
       return schema.shape({
         step1: yup.object().shape({
           auth_key: yup.string().required('Auth Key is required'),

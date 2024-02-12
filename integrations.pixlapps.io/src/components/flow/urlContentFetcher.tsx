@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Label from '../ui/label';
 import Loader from '../ui/loader/loader';
+import { HttpClient } from '@/data/client/http-client';
 
 interface UrlContentFetcherProps {
   url: string;
@@ -21,13 +22,12 @@ const UrlContentFetcher: React.FC<UrlContentFetcherProps> = ({
     const fetchContent = async () => {
       setLoading(true);
       try {
-        const response = await axios({
-          method: 'get',
-          url: `https://integrationapi.pixlapps.io/api/getData/${encodeURIComponent(url)}`,
+        const data =  await HttpClient.post<any>("getData", {
+          url: url
         });
 
-        setContent(response.data);
-        onURLChange(response.data);
+        setContent(data);
+        onURLChange(data);
         setLoading(false);
       } catch (error) {
         setLoading(false);

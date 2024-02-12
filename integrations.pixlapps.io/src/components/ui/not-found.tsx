@@ -33,6 +33,7 @@ const NotFound: React.FC<Props> = ({
           className="h-full w-full object-contain"
           fill
           sizes="(max-width: 768px) 100vw"
+          unoptimized
         />
       </div>
       {text && (

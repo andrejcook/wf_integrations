@@ -27,7 +27,7 @@
     "integrationType": {
       "type": "enumeration",
       "enum": [
-        "tixer",
+        "tixr",
         "restapi"
       ]
     },

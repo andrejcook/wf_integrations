@@ -83,8 +83,8 @@ module.exports = {
       },
     },
     {
-      method: "GET",
-      path: "/getData/:url",
+      method: "POST",
+      path: "/getData",
       handler: "app.getData",
       config: {
         policies: [],

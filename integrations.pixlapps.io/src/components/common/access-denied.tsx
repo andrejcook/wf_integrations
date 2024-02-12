@@ -13,6 +13,7 @@ const AccessDeniedPage = () => {
           src="/access-denied.svg"
           fill
           sizes="(max-width: 768px) 100vw"
+          unoptimized
         />
       </div>
 

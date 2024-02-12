@@ -801,7 +801,7 @@ export interface ApiIntegrationFlowIntegrationFlow
     name: Attribute.String & Attribute.Required;
     steps: Attribute.JSON & Attribute.Required;
     cron: Attribute.String & Attribute.Required;
-    integrationType: Attribute.Enumeration<['tixer', 'restapi']>;
+    integrationType: Attribute.Enumeration<['tixr', 'restapi']>;
     app_credential: Attribute.Relation<
       'api::integration-flow.integration-flow',
       'manyToOne',

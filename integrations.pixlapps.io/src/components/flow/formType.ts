@@ -41,7 +41,7 @@ export interface FieldMapping {
 }
 
 export const COMPONENT = [
-  { value: 'tixer', label: 'Tixer' },
+  { value: 'tixr', label: 'Tixr' },
   { value: 'restapi', label: 'RestApi' },
 ];
 
