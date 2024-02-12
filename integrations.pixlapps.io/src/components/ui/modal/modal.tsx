@@ -12,7 +12,6 @@ export default function Modal({ open, onClose, children }: any) {
   const { t } = useTranslation('common');
   const { locale } = useRouter();
   const dir = locale === 'ar' || locale === 'he' ? 'rtl' : 'ltr';
-  const [searchModal] = useAtom(searchModalInitialValues);
 
   return (
     <Transition show={open} as={Fragment}>
@@ -28,7 +27,7 @@ export default function Modal({ open, onClose, children }: any) {
         <div
           className={cn(
             'min-h-full text-center md:p-5',
-            searchModal ? 'pt-3 md:pt-2.5 lg:pt-4' : ''
+            'pt-3 md:pt-2.5 lg:pt-4'
           )}
         >
           <Transition.Child
@@ -46,8 +45,8 @@ export default function Modal({ open, onClose, children }: any) {
           {/* This element is to trick the browser into centering the modal contents. */}
           <span
             className={cn(
-              'inline-block h-screen',
-              searchModal ? 'mt-16 align-top' : 'align-middle'
+              'inline-block h-screen mt-16 align-top'
+
             )}
             aria-hidden="true"
           >
@@ -68,8 +67,7 @@ export default function Modal({ open, onClose, children }: any) {
                 aria-label="Close panel"
                 ref={cancelButtonRef}
                 className={cn(
-                  'absolute top-4 z-[60] inline-block outline-none focus:outline-none ltr:right-4 rtl:left-4 lg:hidden',
-                  searchModal ? 'hidden' : ''
+                  'absolute top-4 z-[60] inline-block outline-none focus:outline-none ltr:right-4 rtl:left-4 lg:hidden hidden',
                 )}
               >
                 <span className="sr-only">{t('text-close')}</span>

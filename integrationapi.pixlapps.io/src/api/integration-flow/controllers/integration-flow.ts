@@ -210,7 +210,6 @@ module.exports = factories.createCoreController(
             });
 
           const dataSync = details.created.length + details.updated.length;
-          console.log(dataSync);
           await strapi.db.query(`api::integration-log.integration-log`).create({
             data: {
               integration_flow: flowId,

@@ -1,6 +1,6 @@
 import { Routes } from '@/config/routes';
 import { client } from '@/data/client/flow';
-import { GetQueryParams } from '@/types';
+import { GetQueryParams, QueryOptions } from '@/types';
 import { useTranslation } from 'next-i18next';
 import Router, { useRouter } from 'next/router';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
@@ -100,19 +100,23 @@ export const useGetQuery = ({ id }: GetQueryParams) => {
   };
 };
 
-export const useGetAllQuery = () => {
+
+
+export const useGetAllQuery = (params: Partial<QueryOptions>) => {
   const { data, error, isLoading } = useQuery<any, Error>(
-    [API_ENDPOINTS.FLOWS],
-    ({ queryKey, pageParam }) => client.getAllFlow(),
+    [API_ENDPOINTS.FLOWS, params],
+    ({ queryKey, pageParam }) =>
+      client.paginated(Object.assign({}, queryKey[1], pageParam)),
     {
       keepPreviousData: true,
       refetchInterval: 10000,
+
     },
   );
 
   return {
     data: data?.data ?? [],
-    paginatorInfo: data?.meta,
+    paginatorInfo: data?.meta?.pagination,
     error,
     loading: isLoading,
   };

@@ -7,31 +7,29 @@ import { useGetAllQuery } from '@/data/flow';
 import { isEmpty } from 'lodash';
 import { useTranslation } from 'next-i18next';
 import Card from './card';
+import Pagination from '../ui/pagination';
 
-const List = () => {
+type IProps = {
+  data: any | undefined;
+  paginatorInfo: any | null;
+  onPagination: (current: number) => void;
+  onSort: (current: any) => void;
+  onOrder: (current: string) => void;
+};
+
+const List = ({
+  data,
+  paginatorInfo,
+  onPagination,
+  onSort,
+  onOrder,
+}: IProps) => {
   const { t } = useTranslation();
-  const { data, loading, error } = useGetAllQuery();
 
-  if (loading) return <Loader text={'Loading...'} />;
-  if (error) return <ErrorMessage message={error.message} />;
   return (
     <>
-      <div className="mb-5 border-b border-dashed border-border-base pb-5 md:mb-8 md:pb-7 ">
-        <h1 className="text-lg font-semibold text-heading">
-          {t('common:sidebar-nav-item-integrations')}{' '}
-          <LinkButton
-            href={`${Routes.flow.create}`}
-            className="h-12 w-full md:w-auto md:ms-6 float-right"
-          >
-            <span className="block md:hidden xl:block">
-              {t('form:button-label-add-new')}
-            </span>
-            <span className="hidden md:block xl:hidden">
-              {t('form:button-label-add')}
-            </span>
-          </LinkButton>
-        </h1>
-      </div>
+      <div className="mb-6 overflow-hidden rounded">
+
       {!isEmpty(data) ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {data?.map((item: any, idx: number) => (
@@ -41,12 +39,29 @@ const List = () => {
       ) : (
         ''
       )}
+    </div>
       {isEmpty(data) ? (
         <NotFound
           text="text-no-data-found"
           className="mx-auto w-7/12"
         />
       ) : null}
+
+
+    {!!paginatorInfo?.total && (
+        <div className="flex items-center justify-end">
+          <Pagination
+            total={paginatorInfo.total}
+            current={paginatorInfo.page}
+            pageSize={paginatorInfo.pageSize}
+            onChange={onPagination}
+            defaultPageSize={10}
+            showSizeChanger
+            showPrevNextJumpers={true}
+            pageSizeOptions={['10', '20', '50', '100']}
+          />
+        </div>
+      )}
     </>
   );
 };

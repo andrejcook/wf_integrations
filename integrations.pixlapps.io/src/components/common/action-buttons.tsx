@@ -42,8 +42,10 @@ const ActionButtons = ({
             onClick={() => handelCallback('view')}
             className="text-body transition duration-200 hover:text-heading focus:outline-none"
             title={t('common:text-preview')}
-          ></button>
-          <Eye width={18} />
+          >
+            {' '}
+            <Eye width={18} />
+          </button>
         </>
       )}
 

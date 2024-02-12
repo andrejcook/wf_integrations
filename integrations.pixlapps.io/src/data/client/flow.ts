@@ -26,4 +26,29 @@ export const client = {
   getFlowSummery() {
     return HttpClient.get<any>('getFlowSummery');
   },
+  paginated: (params: Partial<QueryOptions>) => {
+    let queryParams: any = {
+      publicationState: 'live',
+     fields: ['id', 'name','cron'],
+      //sort: [`${params.orderBy}:${params.sortedBy}`],
+
+      pagination: {
+        pageSize: `${params.limit}`,
+        page: `${params.page}`,
+      },
+      populate: {
+        integration_flow_detail: {
+         fields: ['status','last_run_date','next_run_date'],
+        },
+     },
+    };
+
+    if (params.search) {
+      queryParams.filters = {
+         name: { $contains: params.search.trim() } ,
+      };
+    }
+
+    return HttpClient.get<any>(API_ENDPOINTS.FLOWS, queryParams);
+  },
 };

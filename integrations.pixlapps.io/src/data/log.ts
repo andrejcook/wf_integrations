@@ -55,17 +55,19 @@ export const useUpdateMutation = () => {
   });
 };
 
-export const useGetByIdQuery = ({ id }: GetQueryParams) => {
+export const useGetByIdQuery = (id: number) => {
   const { data, error, isLoading } = useQuery<any, Error>(
     [API_ENDPOINTS.INTEGRATION_LOGS, { id }],
-    () => client.get({ id }),
+    () => client.getById(id),
     {
       keepPreviousData: true,
+      enabled: id > 0,
+
     },
   );
 
   return {
-    app: data?.data ?? [],
+    data: data?.data ?? [],
     error,
     loading: isLoading,
   };

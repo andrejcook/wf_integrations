@@ -169,7 +169,8 @@ const Card: React.FC<ShopCardProps> = ({ data }: any) => {
           {moment(data.integration_flow_detail.last_run_date).fromNow()}
         </p>
       )}
-      {data.integration_flow_detail.next_run_date && (
+      {(data.integration_flow_detail.status === 'Running' ||
+          data.integration_flow_detail.status === 'Sleeping') &&data.integration_flow_detail.next_run_date && (
         <p className="text-sm mb-1  text-gray-700 dark:text-gray-400">
           Next Run :{' '}
           {moment(data.integration_flow_detail.next_run_date).fromNow()}

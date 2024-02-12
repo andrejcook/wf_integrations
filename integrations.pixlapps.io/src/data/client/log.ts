@@ -30,4 +30,11 @@ export const client = {
 
     return HttpClient.get<any>(API_ENDPOINTS.INTEGRATION_LOGS, queryParams);
   },
+  getById(id: number) {
+    const queryParams = {
+      publicationState: 'live',
+      fields: ['id', 'details'],
+    };
+    return HttpClient.get<any>(`${API_ENDPOINTS.INTEGRATION_LOGS}/${id}`, queryParams);
+  },
 };

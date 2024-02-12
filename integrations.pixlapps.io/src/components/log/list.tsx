@@ -11,6 +11,7 @@ import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import TitleWithSort from '../ui/title-with-sort';
+import ViewLog from './viewLog';
 function padTo2Digits(num: any) {
   return num.toString().padStart(2, '0');
 }
@@ -75,6 +76,9 @@ const List = ({
     },
   });
   const router = useRouter();
+  const [currentViewModelState, setCurrentViewModelState] = useState<any>({
+    show:false,
+  });
 
   function onEdit(id: string) {
     router.push(Routes.flow.edit(id));
@@ -119,7 +123,15 @@ const List = ({
       },
     },
     {
-      title: 'Start Date',
+      title: (
+        <TitleWithSort
+          title={'Start Date'}
+          ascending={
+            sortingObj.sort === SortOrder.Asc && sortingObj.column === 'start_date'
+          }
+          isActive={sortingObj.column === 'start_date'}
+        />
+      ),
       className: 'cursor-pointer',
       dataIndex: 'start_date',
       key: 'start_date',
@@ -129,7 +141,15 @@ const List = ({
       render: (start_date: any) => moment(start_date).format('LLLL'),
     },
     {
-      title: 'End Date',
+      title: (
+        <TitleWithSort
+          title={'End Date'}
+          ascending={
+            sortingObj.sort === SortOrder.Asc && sortingObj.column === 'end_date'
+          }
+          isActive={sortingObj.column === 'end_date'}
+        />
+      ),
       className: 'cursor-pointer',
       dataIndex: 'end_date',
       key: 'end_date',
@@ -143,7 +163,6 @@ const List = ({
       key: 'duration',
       align: alignLeft,
       width: 150,
-      className: 'cursor-pointer',
       render: (
         text: any,
         record: {
@@ -159,7 +178,15 @@ const List = ({
       },
     },
     {
-      title: 'Data Sync',
+      title: (
+        <TitleWithSort
+          title={'Data Sync'}
+          ascending={
+            sortingObj.sort === SortOrder.Asc && sortingObj.column === 'dataSync'
+          }
+          isActive={sortingObj.column === 'dataSync'}
+        />
+      ),
       className: 'cursor-pointer',
       dataIndex: 'dataSync',
       key: 'dataSync',
@@ -169,7 +196,15 @@ const List = ({
       render: (dataSync: number) => dataSync,
     },
     {
-      title: 'Status',
+      title: (
+        <TitleWithSort
+          title={'Status'}
+          ascending={
+            sortingObj.sort === SortOrder.Asc && sortingObj.column === 'status'
+          }
+          isActive={sortingObj.column === 'status'}
+        />
+      ),
       width: 150,
       className: 'cursor-pointer',
       dataIndex: 'status',
@@ -199,7 +234,7 @@ const List = ({
             <ActionButtons
               props={id}
               viewAction={true}
-              callback={() => console.log('callback')}
+              callback={callback}
             />
           </>
         );
@@ -207,8 +242,16 @@ const List = ({
     },
   ];
 
+  function callback(action: any, props: any, actionProps: any) {
+    setCurrentViewModelState({show:true, action, props,actionProps});
+  }
+
+
+
+
   return (
     <>
+    {currentViewModelState.show && <ViewLog id={currentViewModelState.props} isOpen={currentViewModelState.show} closeModal={() =>setCurrentViewModelState({show:false})}/>}
       <div className="mb-6 overflow-hidden rounded shadow">
         <Table
           // @ts-ignore
