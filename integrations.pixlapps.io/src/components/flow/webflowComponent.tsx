@@ -74,6 +74,45 @@ function findDatetimeFields(obj1: any): { field: string }[] {
   return datetimeFields;
 }
 
+async function convertToTypeScriptString(
+  input: Record<string, string>,
+  previewObject: any,
+): Promise<string> {
+  const jsonString = JSON.stringify(input, null, 2);
+
+  const resultString = await Promise.all(
+    jsonString.match(/"([^"]+)":\s*"([^"]*)"/g)?.map(async (match) => {
+      const [_, key, value] = match.match(/"([^"]+)":\s*"([^"]*)"/) || [];
+      if (key && value) {
+        const isAsyncInclude = await asyncIncludes(key, value, previewObject);
+        return `"${key}": ${isAsyncInclude ? `${value}` : `"${value}"`}`;
+      }
+      return match;
+    }) || [],
+  );
+
+  return `{${resultString.join(',\n')} }`;
+}
+
+// Example async include function
+async function asyncIncludes(
+  key: string,
+  value: string,
+  previewObject: any,
+): Promise<boolean> {
+  try {
+    let expressionDataTest = `{ "${key}": ${value} }`;
+    const expressionObjData = jsonata(expressionDataTest, {
+      recover: true,
+    });
+    const result = await expressionObjData.evaluate(previewObject);
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 function getAllKeys(obj: JsonData): string[] {
   const keys: string[] = [];
 
@@ -118,16 +157,6 @@ function getValueByKey(obj: any, targetKey: string): any | null {
 }
 function sortObjectKeysAlphabetically(obj: any) {
   return obj.sort((a: any, b: any) => a.slug.localeCompare(b.slug));
-}
-function sortObjectKeysAlphabetically1(obj: any) {
-  const sortedKeys = Object.keys(obj).sort();
-  const sortedObject: any = {};
-
-  sortedKeys.forEach((key) => {
-    sortedObject[key] = obj[key];
-  });
-
-  return sortedObject;
 }
 interface Props {
   register: UseFormRegister<FormValues>;
@@ -396,12 +425,12 @@ const AdvancedFieldMapping = (fieldMapping: FieldMapping) => {
             recover: true,
           });
           const result = await expressionObj.evaluate(previewObject);
-          console.log(expression);
           setEvaluate(result);
-
           fieldMapping.setFormValue('steps.expression', expression);
         }
       } catch (error) {
+        setEvaluate(error);
+
         console.error('Error evaluating JSONata expression:', error);
       }
     };
@@ -425,19 +454,12 @@ const AdvancedFieldMapping = (fieldMapping: FieldMapping) => {
 
   const items = (previewObject && getAllKeys(previewObject)) || [];
 
-  function convertToTypeScriptString(input: Record<string, string>): string {
-    const jsonString = JSON.stringify(input, null, 2);
-    const resultString = jsonString.replace(
-      /"([^"]+)":\s*"([^"]*)"/g,
-      (_, key, value) =>
-        `"${key}": ${items.includes(value) ? `${value}` : `"${value}"`}`,
-    );
-    return resultString;
-  }
-
   useEffect(() => {
     const evaluteCurrentValue = async () => {
-      const expressionData = convertToTypeScriptString(mapFields);
+      const expressionData = await convertToTypeScriptString(
+        mapFields,
+        previewObject,
+      );
       try {
         if (expressionData) {
           setExpression(expressionData);
@@ -445,7 +467,6 @@ const AdvancedFieldMapping = (fieldMapping: FieldMapping) => {
       } catch (error) {}
     };
     if (mapFields) evaluteCurrentValue();
-    console.log(mapFields);
   }, [mapFields]);
 
   return (
