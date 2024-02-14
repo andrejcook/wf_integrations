@@ -170,12 +170,13 @@ const Card: React.FC<ShopCardProps> = ({ data }: any) => {
         </p>
       )}
       {(data.integration_flow_detail.status === 'Running' ||
-          data.integration_flow_detail.status === 'Sleeping') &&data.integration_flow_detail.next_run_date && (
-        <p className="text-sm mb-1  text-gray-700 dark:text-gray-400">
-          Next Run :{' '}
-          {moment(data.integration_flow_detail.next_run_date).fromNow()}
-        </p>
-      )}
+        data.integration_flow_detail.status === 'Sleeping') &&
+        data.integration_flow_detail.next_run_date && (
+          <p className="text-sm mb-1  text-gray-700 dark:text-gray-400">
+            Next Run :{' '}
+            {moment(data.integration_flow_detail.next_run_date).fromNow()}
+          </p>
+        )}
       <p className="text-sm mb-1 text-gray-700 dark:text-gray-400">
         Interval: {cronInterval(data.cron)}
       </p>
@@ -185,7 +186,10 @@ const Card: React.FC<ShopCardProps> = ({ data }: any) => {
           variant="outline"
           onClick={onEdit}
           type="button"
-          disabled={data.integration_flow_detail.status !== 'Stopped'}
+          disabled={
+            data.integration_flow_detail.status !== 'Stopped' &&
+            data.integration_flow_detail.status !== 'Terminated'
+          }
         >
           <EditFillIcon />
           {'Edit'}
@@ -208,7 +212,7 @@ const Card: React.FC<ShopCardProps> = ({ data }: any) => {
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <rect width="8" height="8" x="8" y="8" stroke-width="8"></rect>
+              <rect width="8" height="8" x="8" y="8" strokeWidth="8"></rect>
             </svg>
             {'Stop'}
           </Button>

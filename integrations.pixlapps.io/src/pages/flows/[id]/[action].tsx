@@ -17,7 +17,6 @@ export default function UpdatePage() {
   if (loading) return <Loader text={'Loading...'} />;
   if (error) return <ErrorMessage message={error.message} />;
 
-  console.log(app);
   return (
     <>
       <div className="flex border-b border-dashed border-gray-300 py-5 sm:py-8">

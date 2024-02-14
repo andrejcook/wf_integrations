@@ -22,6 +22,5 @@ export default {
   },
   bootstrap(app) {
     document.title = "Pixflow";
-    console.log(app);
   },
 };

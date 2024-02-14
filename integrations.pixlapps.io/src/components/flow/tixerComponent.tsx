@@ -1,6 +1,6 @@
 import Card from '@/components/common/card';
 import Input from '@/components/ui/input';
-import axios from 'axios';
+import { HttpClient } from '@/data/client/http-client';
 import React, { useEffect, useState } from 'react';
 import { Controller, useWatch } from 'react-hook-form';
 import { DatePicker } from '../ui/date-picker';
@@ -10,7 +10,6 @@ import Label from '../ui/label';
 import SelectInput from '../ui/select-input';
 import SwitchInput from '../ui/switch-input';
 import UrlContentFetcher from './urlContentFetcher';
-import { HttpClient } from '@/data/client/http-client';
 
 interface Props {
   register: any;
@@ -84,7 +83,6 @@ const TixerComponent: React.FC<Props> = ({
     name: `${fieldPrefix}.startDate`,
   });
 
-
   const endDate = useWatch({
     control,
     name: `${fieldPrefix}.endDate`,
@@ -105,18 +103,12 @@ const TixerComponent: React.FC<Props> = ({
     name: `${fieldPrefix}.tag`,
   });
 
-  console.log(tag)
-
   useEffect(() => {
     const fetchContent = async () => {
       try {
-
-
-
-        const data =  await HttpClient.post<any>("getData", {
-          url: `${TIXR_DOMAIN}${GROUP_API}${auth_key}`
+        const data = await HttpClient.post<any>('getData', {
+          url: `${TIXR_DOMAIN}${GROUP_API}${auth_key}`,
         });
-
 
         if (data && data.length > 0) {
           setGroupFetchError('');
@@ -133,53 +125,43 @@ const TixerComponent: React.FC<Props> = ({
   }, [auth_key]);
 
   useEffect(() => {
-    console.log(category);
-
-
     // Define the debounce function
     const debounceSearch = setTimeout(() => {
       const setURL = () => {
+        let URL = `${TIXR_DOMAIN}groups/${group?.id}/events?cpk=${auth_key}`;
 
-        let URL = `${TIXR_DOMAIN}groups/${group?.id}/events?cpk=${auth_key}`
-
-        if(category && category.value) {
-          URL=URL+`&category=${category.value}`;
+        if (category && category.value) {
+          URL = URL + `&category=${category.value}`;
         }
 
-        if(startDate) {
-          URL=URL+`&startDate=${startDate}`;
+        if (startDate) {
+          URL = URL + `&startDate=${startDate}`;
         }
 
-        if(endDate) {
-          URL=URL+`&endDate=${endDate}`;
+        if (endDate) {
+          URL = URL + `&endDate=${endDate}`;
         }
 
-
-        if(date) {
-          URL=URL+`&date=${date}`;
+        if (date) {
+          URL = URL + `&date=${date}`;
         }
 
-
-        if(inv) {
-          URL=URL+`&inv=${inv}`;
+        if (inv) {
+          URL = URL + `&inv=${inv}`;
         }
 
-
-        if(tag) {
-          URL=URL+`&tag=${tag}`;
+        if (tag) {
+          URL = URL + `&tag=${tag}`;
         }
 
-        setValue(
-          `${fieldPrefix}.apiURL`,
-          URL,
-        );
+        setValue(`${fieldPrefix}.apiURL`, URL);
       };
       setValue(`${fieldPrefix}.apiURL`, null);
       if (group && group?.id) setURL();
     }, 600); // Adjust the debounce delay (in milliseconds) as needed
 
     return () => clearTimeout(debounceSearch);
-  }, [group?.id, category, tag, startDate,endDate,date,inv]);
+  }, [group?.id, category, tag, startDate, endDate, date, inv]);
 
   return (
     <div className="flex flex-wrap pb-8 my-5 border-b border-dashed border-border-base sm:my-8">
@@ -230,10 +212,7 @@ const TixerComponent: React.FC<Props> = ({
             </div>
             <div className="mb-5">
               <div className="flex items-center space-s-4">
-                <SwitchInput
-                  name={`${fieldPrefix}.inv`}
-                  control={control}
-                />
+                <SwitchInput name={`${fieldPrefix}.inv`} control={control} />
                 <Label className="!mb-0.5">Show Full Inventory (TBD)</Label>
               </div>
             </div>
