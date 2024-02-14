@@ -83,8 +83,10 @@ async function convertToTypeScriptString(
   const resultString = await Promise.all(
     jsonString.match(/"([^"]+)":\s*"([^"]*)"/g)?.map(async (match) => {
       const [_, key, value] = match.match(/"([^"]+)":\s*"([^"]*)"/) || [];
+
       if (key && value) {
         const isAsyncInclude = await asyncIncludes(key, value, previewObject);
+
         return `"${key}": ${isAsyncInclude ? `${value}` : `"${value}"`}`;
       }
       return match;
@@ -106,11 +108,13 @@ async function asyncIncludes(
       recover: true,
     });
     const result = await expressionObjData.evaluate(previewObject);
-
-    return true;
-  } catch (error) {
-    return false;
-  }
+    if (Object.keys(result).length === 0) {
+      return false;
+    } else {
+      return true;
+    }
+  } catch (error) {}
+  return false;
 }
 
 function getAllKeys(obj: JsonData): string[] {
