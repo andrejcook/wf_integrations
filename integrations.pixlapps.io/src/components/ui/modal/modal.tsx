@@ -1,11 +1,9 @@
 import { CloseIcon } from '@/components/icons/close-icon';
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment, useRef } from 'react';
+import cn from 'classnames';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { useAtom } from 'jotai';
-import { searchModalInitialValues } from '@/utils/constants';
-import cn from 'classnames';
+import { Fragment, useRef } from 'react';
 
 export default function Modal({ open, onClose, children }: any) {
   const cancelButtonRef = useRef(null);
@@ -27,7 +25,7 @@ export default function Modal({ open, onClose, children }: any) {
         <div
           className={cn(
             'min-h-full text-center md:p-5',
-            'pt-3 md:pt-2.5 lg:pt-4'
+            'pt-3 md:pt-2.5 lg:pt-4',
           )}
         >
           <Transition.Child
@@ -44,10 +42,7 @@ export default function Modal({ open, onClose, children }: any) {
 
           {/* This element is to trick the browser into centering the modal contents. */}
           <span
-            className={cn(
-              'inline-block h-screen mt-16 align-top'
-
-            )}
+            className={cn('inline-block h-screen align-middle')}
             aria-hidden="true"
           >
             &#8203;
