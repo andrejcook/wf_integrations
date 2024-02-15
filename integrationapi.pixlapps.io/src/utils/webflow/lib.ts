@@ -171,8 +171,8 @@ export async function retryAsyncOperation<T>(
         const parseError = {
           status: error?.response?.status,
           code: error?.code,
-          data: error?.response?.data,
-          requestData: error?.response?.config?.data,
+          requestData: requstData,
+          ...error?.response?.data,
         };
         throw parseError;
       }
