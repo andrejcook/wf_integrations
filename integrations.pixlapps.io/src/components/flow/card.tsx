@@ -11,14 +11,14 @@ import { getErrorMessage } from '@/utils/form-error';
 import { Menu, Transition } from '@headlessui/react';
 import cronstrue from 'cronstrue';
 import moment from 'moment';
-import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 import { EditFillIcon } from '../icons/edit';
 import Badge from '../ui/badge/badge';
 import Button from '../ui/button';
-type ShopCardProps = {
+type FlowCardProps = {
   data: App;
+  setCurrentDeleteModelState: any;
 };
 
 export const ListItem = ({ title, info }: { title: string; info: number }) => {
@@ -50,15 +50,12 @@ const Pause = ({ onPlayerClick }: any) => {
   );
 };
 
-const Card: React.FC<ShopCardProps> = ({ data }: any) => {
-  const { t } = useTranslation();
-  const [isPlaying, setIsPlaying] = useState(false);
+const Card: React.FC<FlowCardProps> = ({
+  data,
+  setCurrentDeleteModelState,
+}: any) => {
   const router = useRouter();
-
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
-
+  console.log(data);
   const cronInterval = (cron: string) => {
     try {
       return cronstrue.toString(cron);
@@ -69,6 +66,15 @@ const Card: React.FC<ShopCardProps> = ({ data }: any) => {
 
   function onEdit() {
     router.push(Routes.flow.edit(data?.id as string));
+  }
+  function onDelete() {
+    if (setCurrentDeleteModelState) {
+      setCurrentDeleteModelState({
+        show: true,
+        action: 'delete',
+        props: data?.id,
+      });
+    }
   }
 
   const { mutate: clearSnapShot, isLoading: clearSnapShotLoading } =
@@ -154,6 +160,37 @@ const Card: React.FC<ShopCardProps> = ({ data }: any) => {
                   </button>
                 )}
               </Menu.Item>
+              {(data.integration_flow_detail.status === 'Stopped' ||
+                data.integration_flow_detail.status === 'Terminated') && (
+                <>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        onClick={onEdit}
+                        className={classNames(
+                          'flex w-full items-center space-x-3 px-5 py-2.5 text-sm font-semibold capitalize transition duration-200 hover:text-accent focus:outline-none rtl:space-x-reverse',
+                          active ? 'text-accent' : 'text-body',
+                        )}
+                      >
+                        <span className="whitespace-nowrap">{'Edit'}</span>
+                      </button>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        onClick={onDelete}
+                        className={classNames(
+                          'flex w-full items-center space-x-3 px-5 py-2.5 text-sm font-semibold capitalize transition duration-200 hover:text-accent focus:outline-none rtl:space-x-reverse',
+                          active ? 'text-accent' : 'text-body',
+                        )}
+                      >
+                        <span className="whitespace-nowrap">{'Delete'}</span>
+                      </button>
+                    )}
+                  </Menu.Item>
+                </>
+              )}
             </Menu.Items>
           </Transition>
         </Menu>

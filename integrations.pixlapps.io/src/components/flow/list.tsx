@@ -1,8 +1,10 @@
 import NotFound from '@/components/ui/not-found';
 import { isEmpty } from 'lodash';
 import { useTranslation } from 'next-i18next';
+import { useState } from 'react';
 import Pagination from '../ui/pagination';
 import Card from './card';
+import DeleteView from './delete-view';
 
 type IProps = {
   data: any | undefined;
@@ -20,14 +22,29 @@ const List = ({
   onOrder,
 }: IProps) => {
   const { t } = useTranslation();
+  const [currentDeleteModelState, setCurrentDeleteModelState] = useState<any>({
+    show: false,
+  });
 
   return (
     <>
+      {currentDeleteModelState.show && (
+        <DeleteView
+          id={currentDeleteModelState.props}
+          isOpen={currentDeleteModelState.show}
+          closeModal={() => setCurrentDeleteModelState({ show: false })}
+        />
+      )}
+
       <div className="mb-6 overflow-hidden rounded">
         {!isEmpty(data) ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {data?.map((item: any, idx: number) => (
-              <Card data={item} key={idx} />
+              <Card
+                data={item}
+                key={idx}
+                setCurrentDeleteModelState={setCurrentDeleteModelState}
+              />
             ))}
           </div>
         ) : (
