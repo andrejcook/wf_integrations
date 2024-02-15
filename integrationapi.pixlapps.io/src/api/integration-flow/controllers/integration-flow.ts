@@ -179,7 +179,6 @@ module.exports = factories.createCoreController(
                   });
                 }
               } catch (error) {
-                console.log(error);
                 details.failed.push(error);
               }
             } else {
@@ -193,7 +192,6 @@ module.exports = factories.createCoreController(
                 await createItem(webflowAPI, webflow.collectionId, data);
                 details.created.push(data);
               } catch (error) {
-                console.log(error);
                 details.failed.push(error);
               }
             }
@@ -276,6 +274,47 @@ module.exports = factories.createCoreController(
           .create({
             data: { integration_flow: { id: entity.id } },
           });
+      }
+
+      return entity;
+    },
+
+    async delete(ctx) {
+      const { id } = ctx.request.params;
+
+      const flow = await strapi.db
+        .query(`api::${currentAPIModel}.${currentAPIModel}`)
+        .findOne({
+          select: ["id"],
+          where: { id: id },
+          populate: {
+            integration_flow_detail: {
+              select: ["id"],
+            },
+            integration_logs: {
+              select: ["id"],
+            },
+          },
+        });
+
+      const entity = await strapi.db
+        .query(`api::${currentAPIModel}.${currentAPIModel}`)
+        .delete({
+          where: { id: flow.id },
+        });
+
+      await strapi.db
+        .query(`api::integration-flow-detail.integration-flow-detail`)
+        .delete({
+          where: { id: flow.integration_flow_detail.id },
+        });
+
+      if (flow.integration_logs.length > 0) {
+        flow.integration_logs.forEach(async (element) => {
+          await strapi.db.query(`api::integration-log.integration-log`).delete({
+            where: { id: element.id },
+          });
+        });
       }
 
       return entity;
