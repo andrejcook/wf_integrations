@@ -29,7 +29,7 @@ const defaultValues = {
   },
 };
 
-function CreateOrUpdateForm({ initialValues }: IProps) {
+function CreateOrUpdateForm({ initialValues, action }: IProps) {
   const router = useRouter();
   const { t } = useTranslation();
   const methods = useForm<FormValues>({
@@ -38,6 +38,10 @@ function CreateOrUpdateForm({ initialValues }: IProps) {
     defaultValues: initialValues
       ? {
           ...initialValues,
+          name:
+            action === 'copy'
+              ? `Copy of ${initialValues.name}`
+              : initialValues.name,
           integrationType: {
             value: initialValues.integrationType,
             label: initialValues.integrationType,
@@ -78,7 +82,7 @@ function CreateOrUpdateForm({ initialValues }: IProps) {
       },
     };
     try {
-      if (!initialValues) {
+      if (!initialValues || action === 'copy') {
         create({
           ...input,
         });
@@ -123,7 +127,9 @@ function CreateOrUpdateForm({ initialValues }: IProps) {
             title={`Integration Details`}
             details={`${
               initialValues
-                ? t('form:item-description-edit')
+                ? action === 'copy'
+                  ? t('form:item-description-add')
+                  : t('form:item-description-edit')
                 : t('form:item-description-add')
             } Integration name, cron expression and select the component`}
             className="w-full px-0 pb-5 sm:w-4/12 sm:py-8 sm:pe-4 md:w-1/3 md:pe-5 "
@@ -218,8 +224,10 @@ function CreateOrUpdateForm({ initialValues }: IProps) {
               className="text-sm md:text-base"
             >
               {initialValues
-                ? t('form:button-label-update-app')
-                : t('form:button-label-add-app')}
+                ? action === 'copy'
+                  ? 'Create Flow'
+                  : 'Update Flow'
+                : 'Create Flow'}
             </Button>
           </div>
         </StickyFooterPanel>

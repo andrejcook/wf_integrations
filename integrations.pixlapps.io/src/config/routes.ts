@@ -28,6 +28,9 @@ function routesFactory(endpoint: string) {
     edit: (id: string) => {
       return `${endpoint}/${id}/edit`;
     },
+    copy: (id: string) => {
+      return `${endpoint}/${id}/copy`;
+    },
     details: (slug: string) => `${endpoint}/${slug}`,
   };
 }

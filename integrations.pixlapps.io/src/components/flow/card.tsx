@@ -33,22 +33,6 @@ export const ListItem = ({ title, info }: { title: string; info: number }) => {
     </>
   );
 };
-const Play = ({ onPlayerClick }: any) => {
-  return (
-    <svg className="button" viewBox="0 0 60 60" onClick={onPlayerClick}>
-      <polygon points="0,0 50,30 0,60" />
-    </svg>
-  );
-};
-
-const Pause = ({ onPlayerClick }: any) => {
-  return (
-    <svg className="button" viewBox="0 0 60 60" onClick={onPlayerClick}>
-      <polygon points="0,0 15,0 15,60 0,60" />
-      <polygon points="25,0 40,0 40,60 25,60" />
-    </svg>
-  );
-};
 
 const Card: React.FC<FlowCardProps> = ({
   data,
@@ -67,6 +51,11 @@ const Card: React.FC<FlowCardProps> = ({
   function onEdit() {
     router.push(Routes.flow.edit(data?.id as string));
   }
+
+  function onCopy() {
+    router.push(Routes.flow.copy(data?.id as string));
+  }
+
   function onDelete() {
     if (setCurrentDeleteModelState) {
       setCurrentDeleteModelState({
@@ -142,7 +131,7 @@ const Card: React.FC<FlowCardProps> = ({
             <Menu.Items
               as="ul"
               className={classNames(
-                'shadow-700 absolute z-50 overflow-hidden rounded border border-border-200 bg-light  focus:outline-none ltr:right-0 ltr:origin-top-right rtl:left-0 rtl:origin-top-left',
+                'shadow-700 absolute z-50  rounded border border-border-200 bg-light  focus:outline-none ltr:right-0 ltr:origin-top-right rtl:left-0 rtl:origin-top-left',
               )}
             >
               <Menu.Item>
@@ -150,13 +139,26 @@ const Card: React.FC<FlowCardProps> = ({
                   <button
                     onClick={() => handelClearSnapshot(data?.id)}
                     className={classNames(
-                      'flex w-full items-center space-x-3 px-5 py-2.5 text-sm font-semibold capitalize transition duration-200 hover:text-accent focus:outline-none rtl:space-x-reverse',
+                      'flex w-full items-center space-x-3 px-5 py-1 text-sm font-semibold capitalize transition duration-200 hover:text-accent focus:outline-none rtl:space-x-reverse',
                       active ? 'text-accent' : 'text-body',
                     )}
                   >
                     <span className="whitespace-nowrap">
                       {'Clear Snapshot'}
                     </span>
+                  </button>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    onClick={() => onCopy()}
+                    className={classNames(
+                      'flex w-full items-center space-x-3 px-5 py-1 text-sm font-semibold capitalize transition duration-200 hover:text-accent focus:outline-none rtl:space-x-reverse',
+                      active ? 'text-accent' : 'text-body',
+                    )}
+                  >
+                    <span className="whitespace-nowrap">{'Copy'}</span>
                   </button>
                 )}
               </Menu.Item>
@@ -168,7 +170,7 @@ const Card: React.FC<FlowCardProps> = ({
                       <button
                         onClick={onEdit}
                         className={classNames(
-                          'flex w-full items-center space-x-3 px-5 py-2.5 text-sm font-semibold capitalize transition duration-200 hover:text-accent focus:outline-none rtl:space-x-reverse',
+                          'flex w-full items-center space-x-3 px-5 py-1 text-sm font-semibold capitalize transition duration-200 hover:text-accent focus:outline-none rtl:space-x-reverse',
                           active ? 'text-accent' : 'text-body',
                         )}
                       >
@@ -181,7 +183,7 @@ const Card: React.FC<FlowCardProps> = ({
                       <button
                         onClick={onDelete}
                         className={classNames(
-                          'flex w-full items-center space-x-3 px-5 py-2.5 text-sm font-semibold capitalize transition duration-200 hover:text-accent focus:outline-none rtl:space-x-reverse',
+                          'flex w-full items-center space-x-3 px-5 py-1 text-sm font-semibold capitalize transition duration-200 hover:text-accent focus:outline-none rtl:space-x-reverse',
                           active ? 'text-accent' : 'text-body',
                         )}
                       >

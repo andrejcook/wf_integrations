@@ -8,7 +8,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 
 export default function UpdatePage() {
-  const { query, locale } = useRouter();
+  const { query } = useRouter();
   const { t } = useTranslation();
   const { app, loading, error } = useGetQuery({
     id: query.id as string,
@@ -21,11 +21,11 @@ export default function UpdatePage() {
     <>
       <div className="flex border-b border-dashed border-gray-300 py-5 sm:py-8">
         <h1 className="text-lg font-semibold text-heading">
-          {t('form:form-title-edit')}
+          {query.action === 'copy' ? 'Copy' : t('form:form-title-edit')}
         </h1>
       </div>
 
-      <CreateOrUpdateForm initialValues={app} />
+      <CreateOrUpdateForm initialValues={app} action={query.action as string} />
     </>
   );
 }

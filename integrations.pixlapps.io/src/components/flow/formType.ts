@@ -30,6 +30,7 @@ export type FormValues = {
 
 export type IProps = {
   initialValues?: any;
+  action?: string;
 };
 
 export interface FieldMapping {
