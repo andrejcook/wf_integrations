@@ -8,6 +8,7 @@ import { getErrorMessage } from '@/utils/form-error';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { COMPONENT, FormValues, IProps } from './formType';
 
+import { useGetsOptionsQuery } from '@/data/clients';
 import cronstrue from 'cronstrue';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from 'next/router';
@@ -79,6 +80,7 @@ function CreateOrUpdateForm({ initialValues, action }: IProps) {
         app_credential: values.app_credential,
         ref_key_field: values.ref_key_field?.value,
         snapshot_field: values.snapshot_field,
+        client: values?.client,
       },
     };
     try {
@@ -119,6 +121,11 @@ function CreateOrUpdateForm({ initialValues, action }: IProps) {
     }
   }, [cron]);
 
+  const {
+    data: clientOptionsData,
+    loading: clientOptionsLoading,
+    error: clientOptionsError,
+  } = useGetsOptionsQuery({});
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -156,6 +163,25 @@ function CreateOrUpdateForm({ initialValues, action }: IProps) {
                   {humanReadableText}
                 </label>
               )}
+            </div>
+            <div className="mb-5">
+              <Label>{'Select Client'}</Label>
+              <SelectInput
+                name={`client`}
+                control={control}
+                getOptionLabel={(option: any) => {
+                  return `${option.name}`;
+                }}
+                isLoading={clientOptionsLoading}
+                getOptionValue={(option: any) => {
+                  return option.id;
+                }}
+                isCloseMenuOnSelect={false}
+                options={clientOptionsData}
+                isClearable={true}
+              />
+
+              <ValidationError message={errors?.app?.message} />
             </div>
 
             <div className="mb-5">

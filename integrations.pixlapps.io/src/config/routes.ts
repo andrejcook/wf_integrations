@@ -14,6 +14,9 @@ export const Routes = {
   logs: {
     ...routesFactory('/logs'),
   },
+  clients: {
+    ...routesFactory('/clients'),
+  },
 };
 
 function routesFactory(endpoint: string) {

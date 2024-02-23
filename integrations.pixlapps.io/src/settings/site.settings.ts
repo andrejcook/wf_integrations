@@ -66,6 +66,11 @@ export const siteSettings = {
             icon: 'DashboardIcon',
           },
           {
+            href: Routes.clients.list,
+            label: 'Clients',
+            icon: 'DashboardIcon',
+          },
+          {
             href: Routes.logs.list,
             label: 'sidebar-nav-item-logs',
             icon: 'DashboardIcon',

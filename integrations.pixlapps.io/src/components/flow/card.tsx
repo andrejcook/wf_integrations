@@ -13,6 +13,7 @@ import cronstrue from 'cronstrue';
 import moment from 'moment';
 import { useRouter } from 'next/router';
 import { Fragment } from 'react';
+import { twMerge } from 'tailwind-merge';
 import { EditFillIcon } from '../icons/edit';
 import Badge from '../ui/badge/badge';
 import Button from '../ui/button';
@@ -20,6 +21,7 @@ type FlowCardProps = {
   data: App;
   setCurrentDeleteModelState: any;
 };
+const BASE_URL = process.env.NEXT_PUBLIC_REST_BASE_ENDPOINT ?? '';
 
 export const ListItem = ({ title, info }: { title: string; info: number }) => {
   return (
@@ -88,6 +90,7 @@ const Card: React.FC<FlowCardProps> = ({
       getErrorMessage(err);
     }
   };
+  console.log(data);
 
   return (
     <div
@@ -197,28 +200,51 @@ const Card: React.FC<FlowCardProps> = ({
           </Transition>
         </Menu>
       </div>
-      <a href="#">
-        <h5 className="mb-2 text-sm font-bold tracking-tight text-gray-900 dark:text-white">
-          {data.name}
-        </h5>
-      </a>
-      {data.integration_flow_detail.last_run_date && (
-        <p className="text-sm mb-1  text-gray-700 dark:text-gray-400">
-          Last Run :{' '}
-          {moment(data.integration_flow_detail.last_run_date).fromNow()}
-        </p>
-      )}
-      {(data.integration_flow_detail.status === 'Running' ||
-        data.integration_flow_detail.status === 'Sleeping') &&
-        data.integration_flow_detail.next_run_date && (
-          <p className="text-sm mb-1  text-gray-700 dark:text-gray-400">
-            Next Run :{' '}
-            {moment(data.integration_flow_detail.next_run_date).fromNow()}
-          </p>
-        )}
-      <p className="text-sm mb-1 text-gray-700 dark:text-gray-400">
-        Interval: {cronInterval(data.cron)}
-      </p>
+
+      <div className="relative h-25 justify-end overflow-hidden z-10 flex items-center gap-3">
+        <BrandAvatar
+          is_active={
+            data.integration_flow_detail.status === 'Running' ||
+            data.integration_flow_detail.status === 'Sleeping'
+          }
+          name={data.name}
+          logo={
+            data?.client?.logo?.url
+              ? `${BASE_URL}${data?.client?.logo?.url}`
+              : ''
+          }
+        />
+        <div className="relative max-w-[calc(100%-104px)] flex-auto pr-4 pt-2">
+          <h3 className="text-base font-medium leading-none text-muted-black">
+            {data.name}
+          </h3>
+
+          {data.integration_flow_detail.last_run_date && (
+            <div className="mt-2 flex w-11/12 items-center gap-1 text-xs leading-none">
+              <p className="truncate text-xs text-base-dark">
+                Last Run :{' '}
+                {moment(data.integration_flow_detail.last_run_date).fromNow()}
+              </p>
+            </div>
+          )}
+
+          {(data.integration_flow_detail.status === 'Running' ||
+            data.integration_flow_detail.status === 'Sleeping') &&
+            data.integration_flow_detail.next_run_date && (
+              <div className="mt-2 flex w-11/12 items-center gap-1 text-xs leading-none">
+                <p className="truncate text-xs text-base-dark">
+                  Next Run :{' '}
+                  {moment(data.integration_flow_detail.next_run_date).fromNow()}
+                </p>{' '}
+              </div>
+            )}
+          <div className="mt-2 flex w-11/12 items-center gap-1 text-xs leading-none">
+            <p className="truncate text-xs text-base-dark">
+              Interval: {cronInterval(data.cron)}
+            </p>
+          </div>
+        </div>
+      </div>
 
       <div className="flex space-x-4 py-2">
         <Button
@@ -284,6 +310,70 @@ const Card: React.FC<FlowCardProps> = ({
             {'Run'}
           </Button>
         )}
+      </div>
+    </div>
+  );
+};
+
+type BrandAvatarProps = {
+  is_active?: boolean;
+  logo: string;
+  name: string;
+  size?: 'small' | 'medium';
+  className?: string;
+};
+
+const BrandAvatar: React.FC<BrandAvatarProps> = ({
+  is_active = true,
+  logo,
+  name,
+  size = 'small',
+  className,
+  ...rest
+}) => {
+  return (
+    <div
+      className={twMerge(
+        classNames(
+          'shrink-0 rounded-full border-2 bg-[#F2F2F2] drop-shadow-shopLogo',
+          is_active ? 'border-accent' : 'border-[#F75159]',
+          size === 'small'
+            ? 'h-[5.75rem] w-[5.75rem]'
+            : 'h-32 w-32 lg:h-[12.125rem] lg:w-[12.125rem]',
+          className,
+        ),
+      )}
+      {...rest}
+    >
+      <div className={classNames('relative p-1.5', logo ? '' : 'flex h-full')}>
+        {logo ? (
+          <img
+            alt={name as string}
+            src={logo}
+            sizes="(max-width: 768px) 100vw"
+            className={twMerge(
+              classNames(
+                'rounded-full object-cover',
+                size === 'small'
+                  ? 'h-[4.75rem] w-[4.75rem]'
+                  : 'h-28 w-28 lg:h-[11.125rem] lg:w-[11.125rem]',
+              ),
+            )}
+            width={80}
+            height={80}
+          />
+        ) : (
+          <></>
+        )}
+        <div
+          className={classNames(
+            'absolute rounded-full border-2 border-white',
+            is_active ? 'bg-accent' : 'bg-[#F75159]',
+            size === 'small'
+              ? 'top-2 right-[0.625rem] h-2 w-2'
+              : 'top-4 right-[4px] h-4 w-4 lg:right-[1.4375rem]',
+          )}
+        />
       </div>
     </div>
   );

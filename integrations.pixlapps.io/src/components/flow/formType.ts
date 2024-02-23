@@ -8,6 +8,9 @@ export type FormValues = {
   app: {
     id: number;
   };
+  client: {
+    id: number;
+  };
   app_credential: {
     id: number;
   };

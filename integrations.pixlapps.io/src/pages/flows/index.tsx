@@ -6,7 +6,9 @@ import AppLayout from '@/components/layouts/app';
 import ErrorMessage from '@/components/ui/error-message';
 import LinkButton from '@/components/ui/link-button';
 import Loader from '@/components/ui/loader/loader';
+import Select from '@/components/ui/select/select';
 import { Routes } from '@/config/routes';
+import { useGetsOptionsQuery } from '@/data/clients';
 import { useGetAllQuery } from '@/data/flow';
 import { SortOrder } from '@/types';
 import { useTranslation } from 'next-i18next';
@@ -20,11 +22,17 @@ export const getStaticProps = async ({ locale }: any) => ({
 });
 const Apps = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [clientSearchTerm, setClientSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const { t } = useTranslation();
 
   const [orderBy, setOrder] = useState('id');
   const [sortedBy, setColumn] = useState<SortOrder>(SortOrder.Desc);
+  const {
+    data: clientOptionsData,
+    loading: clientOptionsLoading,
+    error: clientOptionsError,
+  } = useGetsOptionsQuery({});
 
   const {
     data: data,
@@ -37,6 +45,7 @@ const Apps = () => {
     search: searchTerm,
     orderBy,
     sortedBy,
+    clientSearchTerm: clientSearchTerm,
   });
 
   if (loading) return <Loader text={'Loading...'} />;
@@ -59,6 +68,23 @@ const Apps = () => {
         </div>{' '}
         <div className="flex w-full flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 xl:w-2/4">
           <Search placeholderText="Search" onSearch={handleSearch} />
+
+          <div className="ms-5  w-[250px]">
+            <Select
+              name={`client`}
+              getOptionLabel={(option: any) => {
+                return `${option.name}`;
+              }}
+              isLoading={clientOptionsLoading}
+              getOptionValue={(option: any) => {
+                return option.id;
+              }}
+              options={clientOptionsData}
+              isClearable={true}
+              placeholder={'Client'}
+              onChange={(obj: any) => setClientSearchTerm(obj?.id)}
+            />
+          </div>
         </div>
         <LinkButton
           href={`${Routes.flow.create}`}

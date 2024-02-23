@@ -17,6 +17,18 @@ export interface NameAndValueType {
 export enum Permission {
   SuperAdmin = 'super_admin',
 }
+export interface Attachment {
+  id: string;
+  name: string;
+  hash: string;
+  sha256: string;
+  ext: string;
+  mime: string;
+  size: string;
+  url: string;
+  provider: string;
+  related: string;
+}
 
 export interface GetParams {
   slug: string;
@@ -34,6 +46,16 @@ export interface QueryOptions {
   orderBy?: string;
   sortedBy?: SortOrder;
   search?: string;
+}
+
+export interface FlowQueryOptions {
+  language: string;
+  limit?: number;
+  page?: number;
+  orderBy?: string;
+  sortedBy?: SortOrder;
+  search?: string;
+  clientSearchTerm?: string;
 }
 
 export interface PaginatorInfo<T> {
