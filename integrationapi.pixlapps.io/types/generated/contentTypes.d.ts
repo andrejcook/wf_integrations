@@ -753,6 +753,41 @@ export interface ApiAppCredentialAppCredential extends Schema.CollectionType {
   };
 }
 
+export interface ApiClientClient extends Schema.CollectionType {
+  collectionName: 'clients';
+  info: {
+    singularName: 'client';
+    pluralName: 'clients';
+    displayName: 'Client';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required;
+    logo: Attribute.Media & Attribute.Required;
+    integration_flows: Attribute.Relation<
+      'api::client.client',
+      'oneToMany',
+      'api::integration-flow.integration-flow'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::client.client',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::client.client',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiEmailTemplateEmailTemplate extends Schema.CollectionType {
   collectionName: 'email_templates';
   info: {
@@ -823,6 +858,11 @@ export interface ApiIntegrationFlowIntegrationFlow
       'api::integration-flow.integration-flow',
       'oneToOne',
       'api::integration-flow-detail.integration-flow-detail'
+    >;
+    client: Attribute.Relation<
+      'api::integration-flow.integration-flow',
+      'manyToOne',
+      'api::client.client'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -942,6 +982,7 @@ declare module '@strapi/types' {
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
       'api::app.app': ApiAppApp;
       'api::app-credential.app-credential': ApiAppCredentialAppCredential;
+      'api::client.client': ApiClientClient;
       'api::email-template.email-template': ApiEmailTemplateEmailTemplate;
       'api::integration-flow.integration-flow': ApiIntegrationFlowIntegrationFlow;
       'api::integration-flow-detail.integration-flow-detail': ApiIntegrationFlowDetailIntegrationFlowDetail;

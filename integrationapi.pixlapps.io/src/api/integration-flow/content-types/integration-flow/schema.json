@@ -61,6 +61,12 @@
       "relation": "oneToOne",
       "target": "api::integration-flow-detail.integration-flow-detail",
       "mappedBy": "integration_flow"
+    },
+    "client": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::client.client",
+      "inversedBy": "integration_flows"
     }
   }
 }
