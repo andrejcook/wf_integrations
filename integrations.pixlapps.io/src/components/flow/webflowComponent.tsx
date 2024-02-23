@@ -376,6 +376,11 @@ const AdvancedFieldMapping = (fieldMapping: FieldMapping) => {
     name: `steps.mapFields`,
   });
 
+  const ref_key_field = useWatch({
+    control: fieldMapping.control,
+    name: `ref_key_field`,
+  });
+
   const previewObject = getValueByKey(fieldMapping.lhsData, splitter.value);
 
   const rhsFields =
@@ -407,19 +412,22 @@ const AdvancedFieldMapping = (fieldMapping: FieldMapping) => {
 
   const [expression, setExpression] = useState<string>();
   useEffect(() => {
-    if (fieldMapping.rhsData && collection) {
+    if (rhsFields && collection) {
       const slugsObject: { [key: string]: string } = {};
       rhsFields.forEach((item: any) => {
-        slugsObject[item.slug] = '';
+        slugsObject[item.slug] = mapFields[item.slug];
       });
 
       if (!areKeysEqual(slugsObject, mapFields)) {
-        fieldMapping.setFormValue('ref_key_field', null);
+        const exists = refFields.some(
+          (item: any) => item.value === ref_key_field?.value,
+        );
+        if (!exists) fieldMapping.setFormValue('ref_key_field', null);
         fieldMapping.setFormValue('steps.mapFields', slugsObject);
         setExpression(JSON.stringify(slugsObject, null, 2));
       }
     }
-  }, [fieldMapping.rhsData, collection]);
+  }, [rhsFields, collection]);
 
   useEffect(() => {
     const fetchData = async () => {
