@@ -415,7 +415,7 @@ const AdvancedFieldMapping = (fieldMapping: FieldMapping) => {
     if (rhsFields && collection) {
       const slugsObject: { [key: string]: string } = {};
       rhsFields.forEach((item: any) => {
-        slugsObject[item.slug] = mapFields[item.slug];
+        slugsObject[item.slug] = (mapFields && mapFields[item.slug]) ?? '';
       });
 
       if (!areKeysEqual(slugsObject, mapFields)) {
