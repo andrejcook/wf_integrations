@@ -94,7 +94,7 @@ const Card: React.FC<FlowCardProps> = ({
 
   return (
     <div
-      className={`p-4  border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 ${
+      className={`p-4  border border-gray-200 rounded-lg shadow  ${
         data.integration_flow_detail.status === 'Terminated'
           ? 'border-2 border-red-700 bg-pink-100'
           : 'bg-white'
