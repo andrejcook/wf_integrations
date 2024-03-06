@@ -109,10 +109,6 @@ async function asyncIncludes(
     });
     const result = await expressionObjData.evaluate(previewObject);
     if (Object.keys(result).length === 0) {
-      if (value.includes('.')) {
-        return true;
-      }
-
       return false;
     } else {
       return true;

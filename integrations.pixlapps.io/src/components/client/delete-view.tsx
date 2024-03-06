@@ -36,7 +36,7 @@ const DeleteView: React.FC<ModalProps> = ({ closeModal, id, isOpen, data }) => {
           <div className="m-auto w-full max-w-sm rounded-md bg-light p-4 pb-6 sm:w-[24rem] md:rounded-xl">
             <div className="h-full w-full text-center">
               <div className="flex h-full flex-col justify-between">
-                <p className="py-2 px-6 leading-relaxed text-body-dark dark:text-muted">
+                <p className="py-2 px-6 leading-relaxed text-body-dark">
                   <>
                     Please remove the associated integration flows before
                     eliminating this client. It is currently utilized by

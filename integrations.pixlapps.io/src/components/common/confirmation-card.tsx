@@ -1,7 +1,7 @@
 import { TrashIcon } from '@/components/icons/trash';
 import Button from '@/components/ui/button';
-import { useTranslation } from 'next-i18next';
 import cn from 'classnames';
+import { useTranslation } from 'next-i18next';
 
 type ConfirmationCardProps = {
   onCancel: () => void;
@@ -41,7 +41,7 @@ const ConfirmationCard: React.FC<ConfirmationCardProps> = ({
             <TrashIcon className="m-auto mt-4 h-12 w-12 text-accent" />
           )}
           <p className="mt-4 text-xl font-bold text-heading">{t(title)}</p>
-          <p className="py-2 px-6 leading-relaxed text-body-dark dark:text-muted">
+          <p className="py-2 px-6 leading-relaxed text-body-dark">
             {t(description)}
           </p>
           <div className="space-s-4 mt-8 flex w-full items-center justify-between">
@@ -53,7 +53,7 @@ const ConfirmationCard: React.FC<ConfirmationCardProps> = ({
                 variant="custom"
                 className={cn(
                   'w-full rounded bg-accent py-2 px-4 text-center text-base font-semibold text-light shadow-md transition duration-200 ease-in hover:bg-accent-hover focus:bg-accent-hover focus:outline-none',
-                  cancelBtnClassName
+                  cancelBtnClassName,
                 )}
               >
                 {t(cancelBtnText)}
@@ -68,7 +68,7 @@ const ConfirmationCard: React.FC<ConfirmationCardProps> = ({
                 variant="custom"
                 className={cn(
                   'w-full rounded bg-red-600 py-2 px-4 text-center text-base font-semibold text-light shadow-md transition duration-200 ease-in hover:bg-red-700 focus:bg-red-700 focus:outline-none',
-                  deleteBtnClassName
+                  deleteBtnClassName,
                 )}
               >
                 {t(deleteBtnText)}

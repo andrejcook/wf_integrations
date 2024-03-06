@@ -41,7 +41,6 @@ const Card: React.FC<FlowCardProps> = ({
   setCurrentDeleteModelState,
 }: any) => {
   const router = useRouter();
-  console.log(data);
   const cronInterval = (cron: string) => {
     try {
       return cronstrue.toString(cron);
@@ -90,7 +89,6 @@ const Card: React.FC<FlowCardProps> = ({
       getErrorMessage(err);
     }
   };
-  console.log(data);
 
   return (
     <div

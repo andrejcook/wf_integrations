@@ -41,6 +41,10 @@ export const selectStyles = {
       color: '#9CA3AF',
     },
   }),
+  menuPortal: (provided: any, state: any) => ({
+    ...provided,
+    zIndex: 99999,
+  }),
   clearIndicator: (provided: any, state: any) => ({
     ...provided,
     color: state.isFocused ? '#9CA3AF' : '#cccccc',
@@ -54,6 +58,7 @@ export const selectStyles = {
   menu: (provided: any) => ({
     ...provided,
     borderRadius: 5,
+    zIndex: 99999,
     border: '1px solid #E5E7EB',
     boxShadow:
       '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
