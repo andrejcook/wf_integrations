@@ -109,6 +109,10 @@ async function asyncIncludes(
     });
     const result = await expressionObjData.evaluate(previewObject);
     if (Object.keys(result).length === 0) {
+      if (value.includes('.')) {
+        return true;
+      }
+
       return false;
     } else {
       return true;
@@ -144,16 +148,34 @@ function getAllKeys(obj: JsonData): string[] {
 function getValueByKey(obj: any, targetKey: string): any | null {
   const keys = targetKey.split('.');
   let currentObject = obj;
+  if (Array.isArray(obj)) {
+    for (const key of keys) {
+      if (
+        currentObject &&
+        typeof currentObject === 'object' &&
+        key in currentObject
+      ) {
+        currentObject = currentObject[key];
+      } else {
+        return undefined;
+      }
+    }
+  } else {
+    keys.shift();
+    if (keys.length === 0) {
+      return obj;
+    }
 
-  for (const key of keys) {
-    if (
-      currentObject &&
-      typeof currentObject === 'object' &&
-      key in currentObject
-    ) {
-      currentObject = currentObject[key];
-    } else {
-      return undefined;
+    for (const key of keys) {
+      if (
+        currentObject &&
+        typeof currentObject === 'object' &&
+        key in currentObject
+      ) {
+        currentObject = currentObject[key];
+      } else {
+        return undefined;
+      }
     }
   }
 
@@ -343,18 +365,27 @@ const AdvancedFieldMapping = (fieldMapping: FieldMapping) => {
   const [advancedFieldMapping, setAdvancedFieldMapping] =
     useState<boolean>(false);
 
-  const arrayKeysArray =
-    (fieldMapping.lhsData &&
-      fieldMapping.lhsData
-        .map((event: any) => Object.keys(event))
+  let arrayKeysArray: any = [];
+
+  if (fieldMapping.lhsData) {
+    if (Array.isArray(fieldMapping.lhsData)) {
+      // Process array of objects
+      arrayKeysArray = fieldMapping.lhsData
+        .map((event) => Object.keys(event))
         .flat()
         .filter(
-          (key: any, index: any, self: any) =>
+          (key, index, self) =>
             self.indexOf(key) === index &&
             Array.isArray(fieldMapping.lhsData[0][key]),
         )
-        .map((key: any) => ({ value: `0.${key}.0`, label: key }))) ||
-    [];
+        .map((key) => ({ value: `0.${key}.0`, label: key }));
+    } else if (typeof fieldMapping.lhsData === 'object') {
+      // Process single object
+      arrayKeysArray = Object.keys(fieldMapping.lhsData)
+        .filter((key) => Array.isArray(fieldMapping.lhsData[key]))
+        .map((key) => ({ value: `0.${key}.0`, label: key }));
+    }
+  }
 
   const arrayKeysArrayoptions = [
     { value: '0', label: 'root' },
@@ -447,10 +478,10 @@ const AdvancedFieldMapping = (fieldMapping: FieldMapping) => {
       }
     };
 
-    fetchData();
+    if (previewObject) fetchData();
 
     return () => {};
-  }, [expression]);
+  }, [expression, previewObject]);
 
   const handleEvaluate = async () => {
     setExpression(editorRef?.current?.getValue());
@@ -488,7 +519,7 @@ const AdvancedFieldMapping = (fieldMapping: FieldMapping) => {
           onClick={() => setAdvancedFieldMapping(!advancedFieldMapping)}
           type="button"
           style={{ right: '-30px', top: '-20px' }}
-          className="text-blue-700 absolute hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+          className="text-blue-700 absolute hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
         >
           {advancedFieldMapping ? 'Basic' : 'Advanced'}
         </button>
@@ -614,15 +645,15 @@ const AdvancedFieldMapping = (fieldMapping: FieldMapping) => {
 };
 function MappingFieldUI({ control, defaultValues, items }: any) {
   return (
-    <ul className=" divide-y divide-gray-200 dark:divide-gray-700">
+    <ul className=" divide-y divide-gray-200">
       {defaultValues.map((item: any, index: number) => (
         <li key={item.id} className="p-4">
           <div className="flex items-center ">
             <div className="w-1/2">
-              <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+              <p className="text-sm font-medium text-gray-900 truncate">
                 <label htmlFor={item.id}>{item.displayName}</label>
               </p>
-              <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+              <p className="text-sm text-gray-500 truncate ">
                 {`${item.slug} (${item.type})`}
               </p>
             </div>

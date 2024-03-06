@@ -7,7 +7,7 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 
-export default function UpdateTagPage() {
+export default function UpdatePage() {
   const { query, locale } = useRouter();
   const { t } = useTranslation();
   const { app, loading, error } = useGetQuery({
@@ -30,7 +30,7 @@ export default function UpdateTagPage() {
   );
 }
 
-UpdateTagPage.Layout = Layout;
+UpdatePage.Layout = Layout;
 
 export const getServerSideProps = async ({ locale }: any) => ({
   props: {

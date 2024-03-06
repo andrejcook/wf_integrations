@@ -22,7 +22,7 @@ const ViewLog: React.FC<ModalProps> = ({ closeModal, id, isOpen }) => {
               data.details.created &&
               data.details.created.length > 0 && (
                 <>
-                  <p className="py-2 px-6 leading-relaxed text-body-dark dark:text-muted">
+                  <p className="py-2 px-6 leading-relaxed text-body-dark">
                     <h3>Created</h3>
                     <MonacoEditor
                       height="250px"
@@ -48,7 +48,7 @@ const ViewLog: React.FC<ModalProps> = ({ closeModal, id, isOpen }) => {
               data.details.updated &&
               data.details.updated.length > 0 && (
                 <>
-                  <p className="py-2 px-6 leading-relaxed text-body-dark dark:text-muted">
+                  <p className="py-2 px-6 leading-relaxed text-body-dark ">
                     <h3>Updated</h3>
 
                     <MonacoEditor
@@ -75,7 +75,7 @@ const ViewLog: React.FC<ModalProps> = ({ closeModal, id, isOpen }) => {
               data.details.failed &&
               data.details.failed.length > 0 && (
                 <>
-                  <p className="py-2 px-6 leading-relaxed text-body-dark dark:text-muted">
+                  <p className="py-2 px-6 leading-relaxed text-body-dark">
                     {' '}
                     <h3>Failed</h3>
                     <MonacoEditor
