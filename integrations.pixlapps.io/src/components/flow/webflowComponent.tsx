@@ -538,7 +538,7 @@ const AdvancedFieldMapping = (fieldMapping: FieldMapping) => {
           <div className="w-1/2 p-2">
             {refFields && (
               <div className="mb-5">
-                <Label>{'Select Refrence Key'}</Label>
+                <Label>{'Select Reference Key'}</Label>
                 <SelectInput
                   name={`ref_key_field`}
                   control={control}
