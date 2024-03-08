@@ -1,17 +1,18 @@
+import { HttpClient } from '@/data/client/http-client';
 import MonacoEditor from '@monaco-editor/react';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Label from '../ui/label';
 import Loader from '../ui/loader/loader';
-import { HttpClient } from '@/data/client/http-client';
 
 interface UrlContentFetcherProps {
   url: string;
+  headers?: any;
   onURLChange: any;
 }
 
 const UrlContentFetcher: React.FC<UrlContentFetcherProps> = ({
   url,
+  headers,
   onURLChange,
 }) => {
   const [content, setContent] = useState<string>('');
@@ -22,14 +23,17 @@ const UrlContentFetcher: React.FC<UrlContentFetcherProps> = ({
     const fetchContent = async () => {
       setLoading(true);
       try {
-        const data =  await HttpClient.post<any>("getData", {
-          url: url
+        const data = await HttpClient.post<any>('getData', {
+          url: url,
+          headers: headers,
         });
 
         setContent(data);
         onURLChange(data);
         setLoading(false);
       } catch (error) {
+        onURLChange(undefined);
+        setContent('');
         setLoading(false);
         setError('Error fetching content');
       }

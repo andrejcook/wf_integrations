@@ -19,13 +19,15 @@ function getValueByKey(obj: any, targetKey: string): any | null {
 
   return currentObject;
 }
-async function getResponseData(apiURL) {
+async function getResponseData(apiURL, headers) {
   try {
     const response = await axios({
       url: apiURL,
+      headers: headers || {},
     });
     return response.data;
   } catch (ex) {
+    console.log(headers);
     return "";
   }
 }
@@ -38,6 +40,15 @@ function getArrayDataBasedonKey(data, key) {
       allSalesRecords.push(...entry[key]);
     }
     return allSalesRecords;
+  } else {
+    return data;
+  }
+}
+
+function getObjectDataBasedonKey(data, key) {
+  console.log(key);
+  if (key) {
+    return data[key];
   } else {
     return data;
   }
@@ -73,8 +84,20 @@ async function getTransFormData(data, expression, splitter) {
       items.push(result);
     }
   } else {
-    const result = await getExpressionResult(expression, data);
-    items.push(result);
+    const filterData = getObjectDataBasedonKey(
+      data,
+      splitter.replace("0.", "").replace(".0", "").replace("0", "")
+    );
+    if (Array.isArray(filterData)) {
+      for (let i = 0; i < filterData.length; i++) {
+        const previewObject = filterData[i];
+        const result = await getExpressionResult(expression, previewObject);
+        items.push(result);
+      }
+    } else {
+      const result = await getExpressionResult(expression, filterData);
+      items.push(result);
+    }
   }
   return items;
 }

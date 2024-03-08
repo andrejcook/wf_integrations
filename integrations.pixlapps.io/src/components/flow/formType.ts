@@ -46,8 +46,12 @@ export interface FieldMapping {
 
 export const COMPONENT = [
   { value: 'tixr', label: 'Tixr' },
-  { value: 'restapi', label: 'RestApi' },
+  { value: 'restapi', label: 'Rest API' },
+  { value: 'rapidapi', label: 'Rapid API' },
 ];
+
+export const RAPIDAPI = [{ value: 'IGData', label: 'IG Data' }];
+export const RAPIDAPI_TRIGGER = [{ value: '/user/feed', label: 'user feed' }];
 
 export interface JSONataEditorProps {
   initialExpression: any;

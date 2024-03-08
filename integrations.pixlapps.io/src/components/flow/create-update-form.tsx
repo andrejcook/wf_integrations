@@ -18,6 +18,7 @@ import Description from '../ui/description';
 import ValidationError from '../ui/form-validation-error';
 import Label from '../ui/label';
 import SelectInput from '../ui/select-input';
+import RapidApiComponent from './rapidAPIComponent';
 import RestAPIComponent from './restApiComponent';
 import TixerConfig from './tixerComponent';
 import { appValidationSchema } from './validation-schema';
@@ -98,7 +99,7 @@ function CreateOrUpdateForm({ initialValues, action }: IProps) {
       getErrorMessage(err);
     }
   };
-  const [apiResponse, setApiResponse] = useState<any>([]);
+  const [apiResponse, setApiResponse] = useState<any>(undefined);
 
   const cron = useWatch({
     control,
@@ -185,7 +186,7 @@ function CreateOrUpdateForm({ initialValues, action }: IProps) {
             </div>
 
             <div className="mb-5">
-              <Label>{'Select Component'}</Label>
+              <Label>{'Select Integration Type'}</Label>
               <SelectInput
                 name="integrationType"
                 control={control}
@@ -217,7 +218,16 @@ function CreateOrUpdateForm({ initialValues, action }: IProps) {
                 setApiResponse={setApiResponse}
               />
             )}
-            {apiResponse && apiResponse.length > 0 && (
+            {integrationType && integrationType.value === 'rapidapi' && (
+              <RapidApiComponent
+                register={register}
+                control={control}
+                errors={errors}
+                setValue={setValue}
+                setApiResponse={setApiResponse}
+              />
+            )}
+            {apiResponse && (
               <>
                 <WebflowComponent
                   register={register}

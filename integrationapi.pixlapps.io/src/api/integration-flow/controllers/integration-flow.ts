@@ -73,6 +73,7 @@ async function getFlowDetailsById(id: number) {
     flowDetailId: flow.integration_flow_detail.id,
     exterApiDetail: {
       apiURL: flow.steps.step1.apiURL,
+      headers: flow.steps.step1.headers,
     },
     webflow: {
       token: flow.app_credential.token,
@@ -90,12 +91,13 @@ async function getFlowDetailsById(id: number) {
 
 async function getSyncData(
   apiURL: string,
+  headers: any,
   splitter: string,
   expression: string,
   refKey: string,
   prevSouceData: any
 ) {
-  const apiResponse = await getResponseData(apiURL);
+  const apiResponse = await getResponseData(apiURL, headers);
   let sourceData = await getTransFormData(apiResponse, expression, splitter);
   const syncedData = await compareTixerdata(refKey, sourceData, prevSouceData);
   return { sourceData, syncedData, apiResponse };
@@ -121,6 +123,7 @@ module.exports = factories.createCoreController(
 
         flowDetailId = flow.flowDetailId;
         const apiURL = flow.exterApiDetail.apiURL;
+        const headers = flow.exterApiDetail.headers;
         const splitter = flow.splitter;
         const expression = flow.expression;
         const prevSouceData = flow.last_transform_data;
@@ -130,6 +133,7 @@ module.exports = factories.createCoreController(
 
         const { sourceData, syncedData } = await getSyncData(
           apiURL,
+          headers,
           splitter,
           expression,
           refKey,

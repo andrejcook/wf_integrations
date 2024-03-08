@@ -28,7 +28,8 @@
       "type": "enumeration",
       "enum": [
         "tixr",
-        "restapi"
+        "restapi,",
+        "rapidapi"
       ]
     },
     "app_credential": {

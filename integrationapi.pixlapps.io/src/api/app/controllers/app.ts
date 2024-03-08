@@ -353,9 +353,10 @@ module.exports = factories.createCoreController(
     },
 
     async getData(ctx) {
-      const { url } = ctx.request.body;
+      const { url, headers } = ctx.request.body;
       const response = await axios({
         url: url,
+        headers: headers || {},
       });
       return response.data;
     },
