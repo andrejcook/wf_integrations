@@ -52,7 +52,8 @@ export const COMPONENT = [
 
 export const RAPIDAPI = [{ value: 'IGData', label: 'IG Data' }];
 export const RAPIDAPI_TRIGGER = [
-  { value: '/user/feed/v2', label: 'user feed' },
+  { value: '/user/feed', label: 'user feed' },
+  { value: '/user/feed/v2', label: 'user feed V2' },
 ];
 
 export interface JSONataEditorProps {
