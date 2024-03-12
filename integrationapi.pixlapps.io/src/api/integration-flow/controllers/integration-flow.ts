@@ -242,8 +242,33 @@ module.exports = factories.createCoreController(
             });
         }
       } catch (error) {
+        if (flowDetailId) {
+          await strapi.db
+            .query(`api::integration-flow-detail.integration-flow-detail`)
+            .update({
+              where: { id: flowDetailId },
+              data: {
+                status: "Terminated",
+              },
+            });
+        }
+
+        let requstData = "";
+        try {
+          requstData = JSON.parse(error?.response?.config?.data);
+        } catch (ex) {
+          requstData = error?.response?.config?.data;
+        }
+
+        const parseError = {
+          status: error?.response?.status || "",
+          code: error?.code || "",
+          requestData: requstData || "",
+          ...error?.response?.data,
+        };
         details.failed.push({
           message: error?.message,
+          parseError: parseError,
         });
         await strapi.db.query(`api::integration-log.integration-log`).create({
           data: {
@@ -255,16 +280,6 @@ module.exports = factories.createCoreController(
             end_date: new Date().toISOString(),
           },
         });
-        if (flowDetailId) {
-          await strapi.db
-            .query(`api::integration-flow-detail.integration-flow-detail`)
-            .update({
-              where: { id: flowDetailId },
-              data: {
-                status: "Terminated",
-              },
-            });
-        }
       }
 
       return "";
