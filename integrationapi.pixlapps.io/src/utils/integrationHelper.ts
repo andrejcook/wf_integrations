@@ -27,8 +27,7 @@ async function getResponseData(apiURL, headers) {
     });
     return response.data;
   } catch (ex) {
-    console.log(headers);
-    return "";
+    throw ex;
   }
 }
 

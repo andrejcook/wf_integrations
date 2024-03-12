@@ -72,6 +72,13 @@ export async function getCollectionDetail(webflowAPI, collection_id) {
   return await retryAsyncOperation(get);
 }
 
+export async function getSiteDetail(webflowAPI, siteId) {
+  const get = async () => {
+    return await webflowAPI.get(`/sites/${siteId}`);
+  };
+  return await retryAsyncOperation(get);
+}
+
 export async function createItems(webflowAPI, collection_id, items) {
   items.forEach(async (item) => {
     const createField = async () => {
@@ -83,19 +90,31 @@ export async function createItems(webflowAPI, collection_id, items) {
   return {};
 }
 
-export async function createItem(webflowAPI, collection_id, item) {
+export async function createItem(
+  webflowAPI,
+  collection_id,
+  item,
+  isLive = false
+) {
   const createField = async () => {
-    return await webflowAPI.post(`/collections/${collection_id}/items`, item);
+    let APIURL = `/collections/${collection_id}/items`;
+    if (isLive) APIURL = APIURL + "/live";
+    return await webflowAPI.post(APIURL, item);
   };
   return await retryAsyncOperation(createField);
 }
 
-export async function updateItem(webflowAPI, collection_id, item_id, data) {
+export async function updateItem(
+  webflowAPI,
+  collection_id,
+  item_id,
+  data,
+  isLive = false
+) {
   const updateItem = async () => {
-    return await webflowAPI.patch(
-      `/collections/${collection_id}/items/${item_id}`,
-      data
-    );
+    let APIURL = `/collections/${collection_id}/items/${item_id}`;
+    if (isLive) APIURL = APIURL + "/live";
+    return await webflowAPI.patch(APIURL, data);
   };
   return await retryAsyncOperation(updateItem);
 }

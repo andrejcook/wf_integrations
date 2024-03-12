@@ -16,6 +16,7 @@ import { getPublicAPIClient } from "../../../utils/webflow";
 import {
   createItem,
   getAllItems,
+  getSiteDetail,
   updateItem,
 } from "../../../utils/webflow/lib";
 const { createDeepComparer } = require("deep-comparer");
@@ -142,6 +143,8 @@ module.exports = factories.createCoreController(
 
         if (syncedData && syncedData.length > 0) {
           const webflowAPI = await getPublicAPIClient(webflow.token);
+          const { data } = await getSiteDetail(webflowAPI, webflow.siteId);
+          const isPublish = data.lastPublished ? true : false;
           const webFlowItems = await getAllItems(
             webflowAPI,
             webflow.collectionId
@@ -175,7 +178,8 @@ module.exports = factories.createCoreController(
                     webflowAPI,
                     webflow.collectionId,
                     correspondingDestItem.id,
-                    data
+                    data,
+                    isPublish
                   );
                   details.updated.push({
                     ...data,
@@ -193,7 +197,12 @@ module.exports = factories.createCoreController(
               };
 
               try {
-                await createItem(webflowAPI, webflow.collectionId, data);
+                await createItem(
+                  webflowAPI,
+                  webflow.collectionId,
+                  data,
+                  isPublish
+                );
                 details.created.push(data);
               } catch (error) {
                 details.failed.push(error);
