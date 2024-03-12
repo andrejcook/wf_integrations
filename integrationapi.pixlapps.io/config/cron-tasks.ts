@@ -4,7 +4,6 @@ module.exports = {
   processRequest: {
     task: async ({ strapi }) => {
       try {
-        console.log("cron Job started");
         const sql = `SELECT  link.integration_flow_id
         FROM integration_flow_details as ifd inner join integration_flow_details_integration_flow_links as link on ifd.id=link.integration_flow_detail_id  
          WHERE next_run_date IS NOT NULL and status='Sleeping' and next_run_date<='${moment(
@@ -30,7 +29,7 @@ module.exports = {
       }
     },
     options: {
-      rule: "* * * * *",
+      rule: "*/20 * * * * *",
     },
   },
 };
