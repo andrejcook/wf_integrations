@@ -15,5 +15,6 @@ export const API_ENDPOINTS = {
   SITES: '/webflow/sites',
   SITE_COLLECTIONS: '/webflow/sites/collections',
   SITE_COLLECTION: '/webflow/collections',
+  getSingleItem: 'webflow/getSingleItem',
   getData: 'getData',
 };

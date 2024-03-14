@@ -60,6 +60,14 @@ module.exports = {
     },
     {
       method: "GET",
+      path: "/webflow/getSingleItem/:credentialId/:collection_id",
+      handler: "app.getSingleItem",
+      config: {
+        policies: [],
+      },
+    },
+    {
+      method: "GET",
       path: "/webflow/images/:collection_id",
       handler: "app.getImages",
       config: {
@@ -86,6 +94,14 @@ module.exports = {
       method: "POST",
       path: "/getData",
       handler: "app.getData",
+      config: {
+        policies: [],
+      },
+    },
+    {
+      method: "POST",
+      path: "/getTriggerResponse",
+      handler: "app.getTriggerResponse",
       config: {
         policies: [],
       },

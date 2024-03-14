@@ -445,7 +445,6 @@ async function sendCollectionsEmail(userEmail, responseJson) {
       text: "",
       html: template,
     };
-    console.log(userEmail);
 
     await strapi.plugins["email"].services.email.sendTemplatedEmail(
       {

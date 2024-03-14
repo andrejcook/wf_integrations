@@ -4,14 +4,20 @@
 
 import { factories } from "@strapi/strapi";
 import cronParser from "cron-parser";
+import _ from "lodash";
 import {
   compareTixerdata,
   deepCompareItem,
 } from "../../../utils/component/tixr";
 import {
+  getExpressionResult,
   getResponseData,
   getTransFormData,
 } from "../../../utils/integrationHelper";
+import {
+  compareCurrentAndPreviousData,
+  searchSpotify,
+} from "../../../utils/spotify";
 import { getPublicAPIClient } from "../../../utils/webflow";
 import {
   createItem,
@@ -22,7 +28,18 @@ import {
 const { createDeepComparer } = require("deep-comparer");
 
 const currentAPIModel = "integration-flow";
+function getKeys(arr: any) {
+  // Check if input is an array and not empty
+  if (!Array.isArray(arr) || arr.length === 0) {
+    return "";
+  }
 
+  // Map the "value" property of each object in the array
+  const values = arr.map((item) => item.value);
+
+  // Join the values with commas and return as a string
+  return values;
+}
 async function getFlowDetailsById(id: number) {
   const flow = await strapi.db
     .query(`api::${currentAPIModel}.${currentAPIModel}`)
@@ -69,25 +86,7 @@ async function getFlowDetailsById(id: number) {
       },
     });
 
-  return {
-    id: flow.id,
-    flowDetailId: flow.integration_flow_detail.id,
-    exterApiDetail: {
-      apiURL: flow.steps.step1.apiURL,
-      headers: flow.steps.step1.headers,
-    },
-    webflow: {
-      token: flow.app_credential.token,
-      siteId: flow.steps.step2.site.id,
-      collectionId: flow.steps.step2.collection.id,
-    },
-    splitter: flow.steps.splitter.value,
-    expression: flow.steps.expression,
-    last_transform_data: flow.integration_flow_detail.last_transform_data,
-    snapshot_value: flow.integration_flow_detail.last_transform_data,
-    ref_key_field: flow.ref_key_field,
-    integrationType: flow.integrationType,
-  };
+  return flow;
 }
 
 async function getSyncData(
@@ -120,126 +119,323 @@ module.exports = factories.createCoreController(
       const start_date = new Date().toISOString();
       let flowDetailId = 0;
       try {
-        const flow = await getFlowDetailsById(flowId);
+        const flowDetail: any = await getFlowDetailsById(flowId);
 
-        flowDetailId = flow.flowDetailId;
-        const apiURL = flow.exterApiDetail.apiURL;
-        const headers = flow.exterApiDetail.headers;
-        const splitter = flow.splitter;
-        const expression = flow.expression;
-        const prevSouceData = flow.last_transform_data;
-        const refKey = flow.ref_key_field;
-        const integrationType = flow.integrationType;
-        const webflow = flow.webflow;
+        if (
+          ["tixr", "restapi", "rapidapi"].includes(flowDetail.integrationType)
+        ) {
+          const flow = {
+            id: flowDetail.id,
+            flowDetailId: flowDetail.integration_flow_detail.id,
+            exterApiDetail: {
+              apiURL: flowDetail.steps.step1.apiURL,
+              headers: flowDetail.steps.step1.headers,
+            },
+            webflow: {
+              token: flowDetail.app_credential.token,
+              siteId: flowDetail.steps.step2.site.id,
+              collectionId: flowDetail.steps.step2.collection.id,
+            },
+            splitter: flowDetail.steps.splitter.value,
+            expression: flowDetail.steps.expression,
+            last_transform_data:
+              flowDetail.integration_flow_detail.last_transform_data,
+            snapshot_value:
+              flowDetail.integration_flow_detail.last_transform_data,
+            ref_key_field: flowDetail.ref_key_field,
+            integrationType: flowDetail.integrationType,
+          };
 
-        const { sourceData, syncedData } = await getSyncData(
-          apiURL,
-          headers,
-          splitter,
-          expression,
-          refKey,
-          prevSouceData
-        );
+          flowDetailId = flow.flowDetailId;
+          const apiURL = flow.exterApiDetail.apiURL;
+          const headers = flow.exterApiDetail.headers;
+          const splitter = flow.splitter;
+          const expression = flow.expression;
+          const prevSouceData = flow.last_transform_data;
+          const refKey = flow.ref_key_field;
+          const integrationType = flow.integrationType;
+          const webflow = flow.webflow;
 
-        if (syncedData && syncedData.length > 0) {
+          const { sourceData, syncedData } = await getSyncData(
+            apiURL,
+            headers,
+            splitter,
+            expression,
+            refKey,
+            prevSouceData
+          );
+
+          if (syncedData && syncedData.length > 0) {
+            const webflowAPI = await getPublicAPIClient(webflow.token);
+            const { data: siteData } = await getSiteDetail(
+              webflowAPI,
+              webflow.siteId
+            );
+            const isPublish = siteData.lastPublished ? true : false;
+            const webFlowItems = await getAllItems(
+              webflowAPI,
+              webflow.collectionId
+            );
+
+            for (let i = 0; i < syncedData.length; i++) {
+              const sourceItem = syncedData[i];
+              const correspondingDestItem = webFlowItems.find(
+                (destItem) => destItem.fieldData[refKey] === sourceItem[refKey]
+              );
+
+              if (details.failed.length > 1) {
+                throw { message: "Getting multiple errors" };
+              }
+
+              if (correspondingDestItem) {
+                const data = {
+                  isArchived: false,
+                  isDraft: false,
+                  fieldData: sourceItem,
+                };
+
+                try {
+                  const isSame = deepCompareItem(
+                    sourceItem,
+                    correspondingDestItem.fieldData
+                  );
+
+                  if (!isSame) {
+                    await updateItem(
+                      webflowAPI,
+                      webflow.collectionId,
+                      correspondingDestItem.id,
+                      data,
+                      isPublish
+                    );
+                    details.updated.push({
+                      ...data,
+                      id: correspondingDestItem.id,
+                    });
+                  }
+                } catch (error) {
+                  details.failed.push(error);
+                }
+              } else {
+                const data = {
+                  isArchived: false,
+                  isDraft: false,
+                  fieldData: sourceItem,
+                };
+
+                try {
+                  await createItem(
+                    webflowAPI,
+                    webflow.collectionId,
+                    data,
+                    isPublish
+                  );
+                  details.created.push(data);
+                } catch (error) {
+                  details.failed.push(error);
+                }
+              }
+            }
+            await strapi.db
+              .query(`api::integration-flow-detail.integration-flow-detail`)
+              .update({
+                where: { id: flowDetailId },
+                data: {
+                  last_transform_data:
+                    details.failed.length === 0 ? sourceData : [],
+                  status: "Sleeping",
+                },
+              });
+
+            const dataSync = details.created.length + details.updated.length;
+            await strapi.db
+              .query(`api::integration-log.integration-log`)
+              .create({
+                data: {
+                  integration_flow: flowId,
+                  details: details,
+                  status: details.failed.length > 0 ? "Failed" : "Completed",
+                  start_date,
+                  end_date: new Date().toISOString(),
+                  dataSync: dataSync,
+                },
+              });
+          } else {
+            await strapi.db
+              .query(`api::integration-flow-detail.integration-flow-detail`)
+              .update({
+                where: { id: flowDetailId },
+                data: {
+                  status: "Sleeping",
+                },
+              });
+          }
+        } else if (["spotify"].includes(flowDetail.integrationType)) {
+          const flow = {
+            id: flowDetail.id,
+            flowDetailId: flowDetail.integration_flow_detail.id,
+            spotify: {
+              action: flowDetail.steps.step1.action.value,
+              parameter: {
+                query: flowDetail.steps.step1.parameter.query,
+                limit: flowDetail.steps.step1.parameter.limit,
+                type: getKeys(flowDetail.steps.step1.parameter.type),
+                market:
+                  (flowDetail.steps.step1.parameter.market &&
+                    flowDetail.steps.step1.parameter.market.value) ||
+                  "",
+                include_external:
+                  (flowDetail.steps.step1.parameter.include_external &&
+                    flowDetail.steps.step1.parameter.include_external.value) ||
+                  "",
+              },
+            },
+            webflow: {
+              token: flowDetail.app_credential.token,
+              siteId: flowDetail.steps.step2.site.id,
+              collectionId: flowDetail.steps.step2.collection.id,
+            },
+            splitter: flowDetail.steps.splitter.value,
+            expression: flowDetail.steps.expression,
+            last_transform_data:
+              flowDetail.integration_flow_detail.last_transform_data,
+            snapshot_value:
+              flowDetail.integration_flow_detail.last_transform_data,
+            ref_key_field: flowDetail.ref_key_field,
+            integrationType: flowDetail.integrationType,
+            mapFields: flowDetail.steps.mapFields,
+          };
+
+          flowDetailId = flow.flowDetailId;
+          const splitter = flow.splitter;
+          const expression = flow.expression;
+          const prevSouceData = flow.last_transform_data;
+          const refKey = flow.ref_key_field;
+          const integrationType = flow.integrationType;
+          const webflow = flow.webflow;
+          const spotify = flow.spotify;
+
+          const mapFields = flow.mapFields;
+          let pickFields: string[] = [];
+
+          // Collect empty fields
+          for (const key in mapFields) {
+            if (
+              mapFields.hasOwnProperty(key) &&
+              mapFields[key as keyof typeof mapFields] !== ""
+            ) {
+              pickFields.push(key);
+            }
+          }
+
           const webflowAPI = await getPublicAPIClient(webflow.token);
-          const { data } = await getSiteDetail(webflowAPI, webflow.siteId);
-          const isPublish = data.lastPublished ? true : false;
+          const { data: siteData } = await getSiteDetail(
+            webflowAPI,
+            webflow.siteId
+          );
+          const isPublish = siteData.lastPublished ? true : false;
+
           const webFlowItems = await getAllItems(
             webflowAPI,
             webflow.collectionId
           );
 
-          for (let i = 0; i < syncedData.length; i++) {
-            const sourceItem = syncedData[i];
-            const correspondingDestItem = webFlowItems.find(
-              (destItem) => destItem.fieldData[refKey] === sourceItem[refKey]
+          const { syncedData: webFlowCollectionItems } =
+            await compareCurrentAndPreviousData(
+              webFlowItems,
+              prevSouceData,
+              pickFields
             );
 
-            if (details.failed.length > 1) {
-              throw { message: "Getting multiple errors" };
-            }
-
-            if (correspondingDestItem) {
-              const data = {
-                isArchived: false,
-                isDraft: false,
-                fieldData: sourceItem,
-              };
-
-              try {
-                const isSame = deepCompareItem(
-                  sourceItem,
-                  correspondingDestItem.fieldData
+          if (webFlowCollectionItems.length > 0) {
+            for (let i = 0; i < webFlowCollectionItems.length; i++) {
+              const webFlowCollectionItem = webFlowCollectionItems[i];
+              let parameter: any = spotify.parameter;
+              const queryResult = await getExpressionResult(
+                parameter.query,
+                webFlowCollectionItem.fieldData
+              );
+              if (!queryResult || typeof queryResult !== "string") {
+                details.failed.push({
+                  error: "Invalid Query",
+                  query_result: queryResult || "",
+                  query: parameter.query,
+                  webflowData: webFlowCollectionItem,
+                });
+              } else {
+                parameter.q = encodeURIComponent(queryResult);
+                const spotify_search_Items = await searchSpotify(parameter);
+                let sourceData = await getTransFormData(
+                  spotify_search_Items,
+                  expression,
+                  ""
                 );
 
-                if (!isSame) {
-                  await updateItem(
-                    webflowAPI,
-                    webflow.collectionId,
-                    correspondingDestItem.id,
-                    data,
-                    isPublish
-                  );
-                  details.updated.push({
-                    ...data,
-                    id: correspondingDestItem.id,
-                  });
+                if (sourceData && sourceData.length > 0) {
+                  try {
+                    const updateField = _.pick(sourceData[0], pickFields);
+                    const data = {
+                      isArchived: false,
+                      isDraft: false,
+                      fieldData: updateField,
+                    };
+                    await updateItem(
+                      webflowAPI,
+                      webflow.collectionId,
+                      webFlowCollectionItem.id,
+                      data,
+                      isPublish
+                    );
+                    details.updated.push({
+                      ...data,
+                      id: webFlowCollectionItem.id,
+                    });
+                  } catch (error) {
+                    details.failed.push(error);
+                  }
                 }
-              } catch (error) {
-                details.failed.push(error);
-              }
-            } else {
-              const data = {
-                isArchived: false,
-                isDraft: false,
-                fieldData: sourceItem,
-              };
-
-              try {
-                await createItem(
-                  webflowAPI,
-                  webflow.collectionId,
-                  data,
-                  isPublish
-                );
-                details.created.push(data);
-              } catch (error) {
-                details.failed.push(error);
               }
             }
-          }
-          await strapi.db
-            .query(`api::integration-flow-detail.integration-flow-detail`)
-            .update({
-              where: { id: flowDetailId },
-              data: {
-                last_transform_data:
-                  details.failed.length === 0 ? sourceData : [],
-                status: "Sleeping",
-              },
-            });
 
-          const dataSync = details.created.length + details.updated.length;
-          await strapi.db.query(`api::integration-log.integration-log`).create({
-            data: {
-              integration_flow: flowId,
-              details: details,
-              status: details.failed.length > 0 ? "Failed" : "Completed",
-              start_date,
-              end_date: new Date().toISOString(),
-              dataSync: dataSync,
-            },
-          });
-        } else {
-          await strapi.db
-            .query(`api::integration-flow-detail.integration-flow-detail`)
-            .update({
-              where: { id: flowDetailId },
-              data: {
-                status: "Sleeping",
-              },
-            });
+            const synced_sourceData = await getAllItems(
+              webflowAPI,
+              webflow.collectionId
+            );
+
+            await strapi.db
+              .query(`api::integration-flow-detail.integration-flow-detail`)
+              .update({
+                where: { id: flowDetailId },
+                data: {
+                  last_transform_data:
+                    details.failed.length === 0 ? synced_sourceData : [],
+                  status: "Sleeping",
+                },
+              });
+
+            const dataSync = details.created.length + details.updated.length;
+            await strapi.db
+              .query(`api::integration-log.integration-log`)
+              .create({
+                data: {
+                  integration_flow: flowId,
+                  details: details,
+                  status: details.failed.length > 0 ? "Failed" : "Completed",
+                  start_date,
+                  end_date: new Date().toISOString(),
+                  dataSync: dataSync,
+                },
+              });
+          } else {
+            await strapi.db
+              .query(`api::integration-flow-detail.integration-flow-detail`)
+              .update({
+                where: { id: flowDetailId },
+                data: {
+                  status: "Sleeping",
+                },
+              });
+          }
         }
       } catch (error) {
         if (flowDetailId) {

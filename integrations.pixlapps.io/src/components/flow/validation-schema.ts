@@ -27,7 +27,17 @@ export const appValidationSchema = yup.object().shape({
   name: yup.string().required(),
   cron: yup.string().cron().required(),
   integrationType: yup.mixed().required(),
-  ref_key_field: yup.mixed().required('Refrence Key is required'),
+  ref_key_field: yup
+    .mixed()
+    .nullable()
+    .when('integrationType', (values, schema) => {
+      const integrationType = values[0];
+      if (integrationType && integrationType.value !== 'spotify') {
+        return schema.required('Refrence Key is required');
+      }
+
+      return schema;
+    }),
   app: yup.mixed().required('App is required'),
   app_credential: yup.mixed().required('Credential is required'),
   steps: yup.object().when('integrationType', (values, schema) => {

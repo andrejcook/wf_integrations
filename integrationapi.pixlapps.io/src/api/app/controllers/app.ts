@@ -14,6 +14,7 @@ import {
 
 import axios from "axios";
 import moment from "moment";
+import { searchSpotify } from "../../../utils/spotify";
 import {
   createCollection,
   getAllItems,
@@ -80,6 +81,26 @@ module.exports = factories.createCoreController(
           `/collections/${collection_id}`
         );
         ctx.body = collectionData;
+      } catch (ex) {
+        handleError(ctx, ex);
+      }
+    },
+
+    async getSingleItem(ctx) {
+      const { collection_id, credentialId } = ctx.params;
+      try {
+        const credential = await strapi.db
+          .query(`api::app-credential.app-credential`)
+          .findOne({
+            where: { id: credentialId },
+            select: ["*"],
+          });
+        const webflowAPI = await getPublicAPIClient(credential.token);
+
+        const { data } = await webflowAPI.get(
+          `/collections/${collection_id}/items?limit=1`
+        );
+        ctx.body = data.items;
       } catch (ex) {
         handleError(ctx, ex);
       }
@@ -359,6 +380,14 @@ module.exports = factories.createCoreController(
         headers: headers || {},
       });
       return response.data;
+    },
+
+    async getTriggerResponse(ctx) {
+      const { type, parameter, trigger } = ctx.request.body;
+      if (type === "spotify") {
+        return await searchSpotify(parameter);
+      }
+      return "";
     },
   })
 );

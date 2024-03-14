@@ -836,7 +836,9 @@ export interface ApiIntegrationFlowIntegrationFlow
     name: Attribute.String & Attribute.Required;
     steps: Attribute.JSON & Attribute.Required;
     cron: Attribute.String & Attribute.Required;
-    integrationType: Attribute.Enumeration<['tixr', 'restapi']>;
+    integrationType: Attribute.Enumeration<
+      ['tixr', 'restapi,', 'rapidapi', 'spotify']
+    >;
     app_credential: Attribute.Relation<
       'api::integration-flow.integration-flow',
       'manyToOne',
@@ -852,7 +854,7 @@ export interface ApiIntegrationFlowIntegrationFlow
       'oneToMany',
       'api::integration-log.integration-log'
     >;
-    ref_key_field: Attribute.String & Attribute.Required;
+    ref_key_field: Attribute.String;
     snapshot_field: Attribute.String;
     integration_flow_detail: Attribute.Relation<
       'api::integration-flow.integration-flow',

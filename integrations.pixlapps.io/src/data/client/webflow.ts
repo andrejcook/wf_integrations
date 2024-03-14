@@ -13,6 +13,11 @@ export const client = {
     const url = `${API_ENDPOINTS.SITE_COLLECTIONS}/${credentialId}/${siteId}`;
     return HttpClient.get<string>(url);
   },
+  getSingleItemByCollectionId: (credentialId: number, collectionId: string) => {
+    const url = `${API_ENDPOINTS.getSingleItem}/${credentialId}/${collectionId}`;
+    return HttpClient.get<string>(url);
+  },
+
   getCollectionById: (credentialId: number, collectionId: string) => {
     const url = `${API_ENDPOINTS.SITE_COLLECTION}/${credentialId}/${collectionId}`;
     return HttpClient.get<string>(url);

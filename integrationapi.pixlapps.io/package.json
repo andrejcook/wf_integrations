@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@ckeditor/strapi-plugin-ckeditor": "^0.0.10",
+    "@spotify/web-api-ts-sdk": "^1.2.0",
     "@strapi/plugin-i18n": "4.15.0",
     "@strapi/plugin-users-permissions": "4.15.0",
     "@strapi/provider-email-sendgrid": "^4.15.5",

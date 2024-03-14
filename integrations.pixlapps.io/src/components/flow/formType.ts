@@ -42,12 +42,14 @@ export interface FieldMapping {
   control: any;
   register: UseFormRegister<FormValues>;
   setFormValue: any;
+  disableSplitter?: boolean;
 }
 
 export const COMPONENT = [
   { value: 'tixr', label: 'Tixr' },
   { value: 'restapi', label: 'Rest API' },
   { value: 'rapidapi', label: 'Rapid API' },
+  { value: 'spotify', label: 'Spotify' },
 ];
 
 export const RAPIDAPI = [{ value: 'IGData', label: 'IG Data' }];
@@ -55,6 +57,8 @@ export const RAPIDAPI_TRIGGER = [
   { value: '/user/feed', label: 'user feed' },
   { value: '/user/feed/v2', label: 'user feed V2' },
 ];
+
+export const SPOTIFY_API_TRIGGER = [{ value: 'search', label: 'search' }];
 
 export interface JSONataEditorProps {
   initialExpression: any;

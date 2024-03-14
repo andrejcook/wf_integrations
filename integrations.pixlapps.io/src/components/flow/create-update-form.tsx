@@ -18,8 +18,10 @@ import Description from '../ui/description';
 import ValidationError from '../ui/form-validation-error';
 import Label from '../ui/label';
 import SelectInput from '../ui/select-input';
+import MappingDataComponent from './mappingDataComponent';
 import RapidApiComponent from './rapidAPIComponent';
 import RestAPIComponent from './restApiComponent';
+import SpotifyApiComponent from './spotifyAPIComponent';
 import TixerConfig from './tixerComponent';
 import { appValidationSchema } from './validation-schema';
 import WebflowComponent from './webflowComponent';
@@ -198,44 +200,77 @@ function CreateOrUpdateForm({ initialValues, action }: IProps) {
           </Card>
         </div>
 
-        {integrationType && (
-          <>
-            {integrationType && integrationType.value === 'tixr' && (
-              <TixerConfig
-                register={register}
-                control={control}
-                errors={errors}
-                setValue={setValue}
-                setApiResponse={setApiResponse}
-              />
-            )}
+        {integrationType &&
+          (integrationType.value === 'tixr' ||
+            integrationType.value === 'restapi' ||
+            integrationType.value === 'rapidapi') && (
+            <>
+              {integrationType && integrationType.value === 'tixr' && (
+                <TixerConfig
+                  register={register}
+                  control={control}
+                  errors={errors}
+                  setValue={setValue}
+                  setApiResponse={setApiResponse}
+                />
+              )}
 
-            {integrationType && integrationType.value === 'restapi' && (
-              <RestAPIComponent
-                register={register}
-                control={control}
-                errors={errors}
-                setApiResponse={setApiResponse}
-              />
-            )}
-            {integrationType && integrationType.value === 'rapidapi' && (
-              <RapidApiComponent
-                register={register}
-                control={control}
-                errors={errors}
-                setValue={setValue}
-                setApiResponse={setApiResponse}
-              />
-            )}
-            {apiResponse && (
+              {integrationType && integrationType.value === 'restapi' && (
+                <RestAPIComponent
+                  register={register}
+                  control={control}
+                  errors={errors}
+                  setApiResponse={setApiResponse}
+                />
+              )}
+              {integrationType && integrationType.value === 'rapidapi' && (
+                <RapidApiComponent
+                  register={register}
+                  control={control}
+                  errors={errors}
+                  setValue={setValue}
+                  setApiResponse={setApiResponse}
+                />
+              )}
+              {apiResponse && (
+                <>
+                  <WebflowComponent control={control} errors={errors} />
+
+                  <MappingDataComponent
+                    register={register}
+                    control={control}
+                    errors={errors}
+                    apiResponse={apiResponse}
+                    setValue={setValue}
+                    isDirty={isDirty}
+                  />
+                </>
+              )}
+            </>
+          )}
+
+        {integrationType && integrationType.value === 'spotify' && (
+          <>
+            <>
+              <WebflowComponent control={control} errors={errors} />
+            </>
+            {integrationType && integrationType.value === 'spotify' && (
               <>
-                <WebflowComponent
+                <SpotifyApiComponent
+                  register={register}
+                  control={control}
+                  errors={errors}
+                  setValue={setValue}
+                  setApiResponse={setApiResponse}
+                />{' '}
+                <MappingDataComponent
                   register={register}
                   control={control}
                   errors={errors}
                   apiResponse={apiResponse}
                   setValue={setValue}
                   isDirty={isDirty}
+                  disableSplitter={true}
                 />
               </>
             )}

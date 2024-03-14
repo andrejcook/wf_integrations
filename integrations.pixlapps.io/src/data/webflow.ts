@@ -87,7 +87,6 @@ export const useGetsSites = (credentialId: number) => {
   };
 };
 export const useGetURLResponse = (enableFeatch: boolean, url: string) => {
-  console.log(enableFeatch);
   const { data, error, isLoading } = useQuery<any, Error>(
     [API_ENDPOINTS.getData, url],
     ({ queryKey, pageParam }) =>
@@ -116,6 +115,27 @@ export const useGetsCollections = (credentialId: number, siteId: string) => {
 
   return {
     data: data ?? [],
+    error,
+    loading: isLoading,
+  };
+};
+
+export const useGetSingleItem = (
+  credentialId: number,
+  collectionId: string,
+) => {
+  const { data, error, isLoading } = useQuery<any, Error>(
+    [API_ENDPOINTS.getSingleItem, credentialId, collectionId],
+    ({ queryKey, pageParam }) =>
+      client.getSingleItemByCollectionId(credentialId, collectionId),
+    {
+      keepPreviousData: true,
+      enabled: credentialId > 0 && collectionId != undefined,
+    },
+  );
+
+  return {
+    data: data ? data[0]?.fieldData : {} ?? {},
     error,
     loading: isLoading,
   };

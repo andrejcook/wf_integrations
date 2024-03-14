@@ -29,7 +29,8 @@
       "enum": [
         "tixr",
         "restapi,",
-        "rapidapi"
+        "rapidapi",
+        "spotify"
       ]
     },
     "app_credential": {
@@ -52,7 +53,7 @@
     },
     "ref_key_field": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "snapshot_field": {
       "type": "string"

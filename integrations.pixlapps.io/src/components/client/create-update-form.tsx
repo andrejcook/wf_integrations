@@ -75,9 +75,6 @@ export default function CreateOrUpdateForm({ initialValues }: IProps) {
     }
   };
 
-  console.log(errors);
-
-  console.log(watch());
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-wrap my-5 sm:my-8">

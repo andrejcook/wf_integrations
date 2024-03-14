@@ -93,7 +93,6 @@ export default function CreateOrUpdateForm({ initialValues }: IProps) {
   };
 
   const onSubmit = async (values: FormValues) => {
-    console.log(values);
     const authorizationUrl = `https://webflow.com/oauth/authorize?response_type=code&client_id=${
       values.app.client_id
     }&scope=${encodeURIComponent(values.app.scope.split(',').join(' '))}`;

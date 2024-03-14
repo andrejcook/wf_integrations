@@ -76,7 +76,6 @@ const RapidApiComponent: React.FC<Props> = ({
         setValue(`${fieldPrefix}.apiURL`, URL);
       };
       setValue(`${fieldPrefix}.apiURL`, null);
-      console.log(username);
       if (username && trigger) setURL();
     }, 600); // Adjust the debounce delay (in milliseconds) as needed
 

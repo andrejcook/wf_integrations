@@ -45,7 +45,6 @@ function getArrayDataBasedonKey(data, key) {
 }
 
 function getObjectDataBasedonKey(data, key) {
-  console.log(key);
   if (key) {
     return data[key];
   } else {
@@ -53,14 +52,14 @@ function getObjectDataBasedonKey(data, key) {
   }
 }
 
-async function getExpressionResult(expression, data) {
+export async function getExpressionResult(expression, data) {
   try {
     const expressionObj = jsonata(expression, {
       recover: true,
     });
     return await expressionObj.evaluate(data);
   } catch (ex) {
-    return "";
+    throw ex;
   }
 }
 
