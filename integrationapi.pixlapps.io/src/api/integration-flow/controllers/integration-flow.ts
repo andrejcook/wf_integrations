@@ -5,6 +5,7 @@
 import { factories } from "@strapi/strapi";
 import cronParser from "cron-parser";
 import _ from "lodash";
+import moment from "moment";
 import {
   compareTixerdata,
   deepCompareItem,
@@ -50,6 +51,7 @@ async function getFlowDetailsById(id: number) {
         "integrationType",
         "ref_key_field",
         "snapshot_field",
+        "archive_field",
         "cron",
       ],
       where: { id: id },
@@ -58,7 +60,12 @@ async function getFlowDetailsById(id: number) {
           select: ["id", "token"],
         },
         integration_flow_detail: {
-          select: ["id", "last_transform_data", "snapshot_value"],
+          select: [
+            "id",
+            "last_transform_data",
+            "snapshot_value",
+            "auto_archive_date",
+          ],
         },
       },
     });
@@ -127,6 +134,8 @@ module.exports = factories.createCoreController(
           const flow = {
             id: flowDetail.id,
             flowDetailId: flowDetail.integration_flow_detail.id,
+            auto_archive_date:
+              flowDetail.integration_flow_detail.auto_archive_date,
             exterApiDetail: {
               apiURL: flowDetail.steps.step1.apiURL,
               headers: flowDetail.steps.step1.headers,
@@ -155,6 +164,65 @@ module.exports = factories.createCoreController(
           const refKey = flow.ref_key_field;
           const integrationType = flow.integrationType;
           const webflow = flow.webflow;
+          const archive_field = flowDetail.archive_field;
+          if (archive_field) {
+            const currentDate: moment.Moment = moment();
+            if (
+              !flow.auto_archive_date ||
+              currentDate.isAfter(
+                moment(flow.auto_archive_date).add(1, "hours")
+              )
+            ) {
+              const webflowAPI = await getPublicAPIClient(webflow.token);
+              const webFlowItems = await getAllItems(
+                webflowAPI,
+                webflow.collectionId
+              );
+              const { data: siteData } = await getSiteDetail(
+                webflowAPI,
+                webflow.siteId
+              );
+              const isPublish = siteData.lastPublished ? true : false;
+
+              for (let i = 0; i < webFlowItems.length; i++) {
+                const webFlowItem = webFlowItems[i];
+                if (
+                  webFlowItem.fieldData[archive_field] &&
+                  !webFlowItem.isArchived
+                ) {
+                  const givenDate: moment.Moment = moment(
+                    webFlowItem.fieldData[archive_field]
+                  );
+                  if (currentDate.isAfter(givenDate)) {
+                    const data = {
+                      isArchived: true,
+                      isDraft: false,
+                    };
+
+                    await updateItem(
+                      webflowAPI,
+                      webflow.collectionId,
+                      webFlowItem.id,
+                      data,
+                      isPublish
+                    );
+                    details.updated.push({
+                      ...data,
+                      id: webFlowItem.id,
+                    });
+                  }
+                }
+              }
+              await strapi.db
+                .query(`api::integration-flow-detail.integration-flow-detail`)
+                .update({
+                  where: { id: flow.flowDetailId },
+                  data: {
+                    auto_archive_date: currentDate.toISOString(),
+                  },
+                });
+            }
+          }
 
           const { sourceData, syncedData } = await getSyncData(
             apiURL,
@@ -261,6 +329,21 @@ module.exports = factories.createCoreController(
                 },
               });
           } else {
+            const dataSync = details.created.length + details.updated.length;
+            if (dataSync > 0) {
+              await strapi.db
+                .query(`api::integration-log.integration-log`)
+                .create({
+                  data: {
+                    integration_flow: flowId,
+                    details: details,
+                    status: details.failed.length > 0 ? "Failed" : "Completed",
+                    start_date,
+                    end_date: new Date().toISOString(),
+                    dataSync: dataSync,
+                  },
+                });
+            }
             await strapi.db
               .query(`api::integration-flow-detail.integration-flow-detail`)
               .update({

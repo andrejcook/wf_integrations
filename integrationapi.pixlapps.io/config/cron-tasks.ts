@@ -29,7 +29,7 @@ module.exports = {
       }
     },
     options: {
-      rule: "*/20 * * * * *",
+      rule: "*/30 * * * * *",
     },
   },
 };

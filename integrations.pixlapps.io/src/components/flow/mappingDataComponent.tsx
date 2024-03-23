@@ -19,6 +19,7 @@ import { useTranslation } from 'next-i18next';
 import { useRef } from 'react';
 import AutoSuggestInput from '../ui/autoSuggust';
 import Input from '../ui/input';
+import SwitchInput from '../ui/switch-input';
 
 interface JsonData {
   [key: string]: any;
@@ -293,6 +294,11 @@ const AdvancedFieldMapping = (fieldMapping: FieldMapping) => {
     name: `ref_key_field`,
   });
 
+  const enableArchive = useWatch({
+    control: fieldMapping.control,
+    name: `enableArchive`,
+  });
+
   const previewObject = getValueByKey(fieldMapping.lhsData, splitter.value);
 
   const rhsFields =
@@ -313,6 +319,22 @@ const AdvancedFieldMapping = (fieldMapping: FieldMapping) => {
           (element: { slug: string; type: string }) =>
             element.slug !== 'slug' &&
             (element.type === 'PlainText' || element.type === 'Number'),
+        )
+        .map((element: any) => {
+          return {
+            value: element.slug,
+            label: element.displayName,
+          };
+        })) ||
+    [];
+
+  const dateFields =
+    (fieldMapping &&
+      fieldMapping.rhsData &&
+      fieldMapping.rhsData?.fields
+        ?.filter(
+          (element: { slug: string; type: string }) =>
+            element.slug !== 'slug' && element.type === 'DateTime',
         )
         .map((element: any) => {
           return {
@@ -406,49 +428,76 @@ const AdvancedFieldMapping = (fieldMapping: FieldMapping) => {
         </button>
       </div>
       {!fieldMapping.disableSplitter && (
-        <div className="flex">
-          <div className="w-1/2 flex">
-            <div className="w-1/2 p-2">
-              {arrayKeysArrayoptions && (
-                <div className="mb-5">
-                  <Label>{'Select Splitter'}</Label>
-                  <SelectInput
-                    name="steps.splitter"
-                    control={fieldMapping.control}
-                    isCloseMenuOnSelect={false}
-                    options={arrayKeysArrayoptions}
-                  />
-                </div>
-              )}{' '}
+        <>
+          <div className="flex">
+            <div className="w-1/2 flex">
+              <div className="w-1/2 p-2">
+                {arrayKeysArrayoptions && (
+                  <div className="mb-5">
+                    <Label>{'Select Splitter'}</Label>
+                    <SelectInput
+                      name="steps.splitter"
+                      control={fieldMapping.control}
+                      isCloseMenuOnSelect={false}
+                      options={arrayKeysArrayoptions}
+                    />
+                  </div>
+                )}{' '}
+              </div>
+              <div className="w-1/2 p-2">
+                {refFields && (
+                  <div className="mb-5">
+                    <Label>{'Select Reference Key'}</Label>
+                    <SelectInput
+                      name={`ref_key_field`}
+                      control={control}
+                      isCloseMenuOnSelect={false}
+                      options={refFields}
+                    />{' '}
+                    <ValidationError
+                      message={t(errors?.ref_key_field?.message)}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="w-1/2 p-2">
-              {refFields && (
-                <div className="mb-5">
-                  <Label>{'Select Reference Key'}</Label>
-                  <SelectInput
-                    name={`ref_key_field`}
-                    control={control}
-                    isCloseMenuOnSelect={false}
-                    options={refFields}
-                  />{' '}
-                  <ValidationError
-                    message={t(errors?.ref_key_field?.message)}
-                  />
-                </div>
-              )}
+            <div className="w-1/2 flex">
+              <div className="w-1/2 p-2">
+                <Input
+                  label={'Snap Shot Field'}
+                  {...register('snapshot_field')}
+                  variant="outline"
+                  className="mb-5"
+                />
+              </div>
             </div>
           </div>
-          <div className="w-1/2 flex">
-            <div className="w-1/2 p-2">
-              <Input
-                label={'Snap Shot Field'}
-                {...register('snapshot_field')}
-                variant="outline"
-                className="mb-5"
-              />
+          <div className="flex">
+            <div className="w-1/2 flex">
+              <div className="p-2">
+                {dateFields && dateFields.length > 0 && (
+                  <>
+                    <div className="flex items-center space-s-4">
+                      <SwitchInput name={`enableArchive`} control={control} />
+                      <Label className="!mb-0.5">Auto Archive</Label>{' '}
+                      {enableArchive && (
+                        <SelectInput
+                          name={`archive_field`}
+                          control={control}
+                          isCloseMenuOnSelect={false}
+                          isClearable={true}
+                          options={dateFields}
+                          placeholder="Select Archive Field
+                        "
+                        />
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
       {fieldMapping.disableSplitter && (
         <div className="flex">

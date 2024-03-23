@@ -866,6 +866,7 @@ export interface ApiIntegrationFlowIntegrationFlow
       'manyToOne',
       'api::client.client'
     >;
+    archive_field: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -910,6 +911,7 @@ export interface ApiIntegrationFlowDetailIntegrationFlowDetail
       'api::integration-flow.integration-flow'
     >;
     next_run_date: Attribute.DateTime;
+    auto_archive_date: Attribute.DateTime;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<

@@ -69,6 +69,9 @@
       "relation": "manyToOne",
       "target": "api::client.client",
       "inversedBy": "integration_flows"
+    },
+    "archive_field": {
+      "type": "string"
     }
   }
 }

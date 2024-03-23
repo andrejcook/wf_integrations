@@ -54,6 +54,7 @@ function CreateOrUpdateForm({ initialValues, action }: IProps) {
             value: initialValues.ref_key_field,
             label: initialValues.ref_key_field,
           },
+          enableArchive: initialValues?.archive_field ? true : false,
         }
       : defaultValues,
     //@ts-ignore
@@ -84,6 +85,7 @@ function CreateOrUpdateForm({ initialValues, action }: IProps) {
         ref_key_field: values.ref_key_field?.value,
         snapshot_field: values.snapshot_field,
         client: values?.client,
+        archive_field: values?.archive_field?.value,
       },
     };
     try {

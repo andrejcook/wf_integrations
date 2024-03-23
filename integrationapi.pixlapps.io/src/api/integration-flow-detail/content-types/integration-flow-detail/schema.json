@@ -41,6 +41,9 @@
     },
     "next_run_date": {
       "type": "datetime"
+    },
+    "auto_archive_date": {
+      "type": "datetime"
     }
   }
 }

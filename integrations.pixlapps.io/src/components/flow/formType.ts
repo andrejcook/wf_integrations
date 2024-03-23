@@ -29,6 +29,7 @@ export type FormValues = {
   items: any;
   ref_key_field: any;
   snapshot_field: string;
+  archive_field?: any;
 };
 
 export type IProps = {
